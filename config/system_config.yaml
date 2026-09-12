@@ -1,0 +1,75 @@
+# 系统配置文件
+
+llm:
+  provider: "ollama"
+  base_url: "http://localhost:11434"
+  model_name: "qwen3.5:4b"
+  api_key: ""
+  max_tokens: 1500
+  temperature: 0.7
+  timeout: 120
+  keep_alive: "24h"
+
+embedding:
+  provider: "local"
+  model_name: "BAAI/bge-small-zh-v1.5"
+  dimension: 512
+  batch_size: 32
+  cache_dir: "models/embedding"
+
+vector_store:
+  type: "chroma"
+  persist_directory: "data/chroma_db"
+  collection_prefix: "enterprise_"
+  distance_metric: "cosine"
+
+rpa:
+  poll_interval: 0.5
+  max_retries: 3
+  retry_delay: 1.0
+  headless: false
+  timeout: 30000
+  mutation_observer: true
+
+rag:
+  top_k: 5
+  enable_reranking: true
+  use_llm_rerank: true
+  enable_semantic_dedup: true
+  dedup_threshold: 0.85
+  relevance_threshold: 0.3
+  score_threshold: 0.1
+
+cache:
+  enabled: true
+  lru_max_size: 1000
+  ttl: 300
+  message_dedup_ttl: 1800
+  intent_cache_ttl: 180
+
+database:
+  provider: "sqlite"
+  path: "data/huoketest.db"
+  echo: false
+  pool_size: 5
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: ""
+
+server:
+  host: "127.0.0.1"
+  port: 8023
+  debug: true
+
+log:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_path: "logs/app.log"
+  rotation: "10 MB"
+  retention: "30 days"
+  compression: "zip"
+
+version: "2.0.0"

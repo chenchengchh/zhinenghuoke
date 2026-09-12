@@ -1,0 +1,44 @@
+# RAG 混合检索权重配置
+# 通过此文件可以为不同行业/企业定制融合权重和融合策略
+# 加载优先级：schema metadata.retrieval_policy.rrf_weights > 企业覆盖 > 行业配置 > 默认配置
+#
+# 融合策略说明：
+#   rrf              - 倒数秩融合（推荐，对分数尺度不敏感）
+#   linear_weighted  - 线性加权（需配合归一化使用）
+
+default:
+  vector_weight: 0.40
+  keyword_weight: 0.35
+  bm25_weight: 0.20
+  kg_weight: 0.20
+  fusion: rrf
+  rrf_k: 60
+
+# 按行业覆盖
+industries:
+  tourism:
+    vector_weight: 0.30
+    keyword_weight: 0.45
+    bm25_weight: 0.20
+    kg_weight: 0.25
+    fusion: linear_weighted
+  ecommerce:
+    vector_weight: 0.50
+    keyword_weight: 0.30
+    bm25_weight: 0.20
+    kg_weight: 0.20
+    fusion: rrf
+  education:
+    vector_weight: 0.45
+    keyword_weight: 0.35
+    bm25_weight: 0.20
+    kg_weight: 0.20
+    fusion: rrf
+
+# 企业级覆盖（按 enterprise_id）
+enterprises:
+  demo_enterprise_1:
+    vector_weight: 0.5
+    keyword_weight: 0.3
+    bm25_weight: 0.2
+    kg_weight: 0.2

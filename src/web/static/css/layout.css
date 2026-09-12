@@ -1,0 +1,434 @@
+/**
+ * Vben Admin / Ant Design Pro 风格布局 (SaaS Modern Layout)
+ * 核心：左侧深色侧边栏 + 顶部亮色工具栏 + 浅灰主内容区
+ */
+
+:root {
+  --sider-width: 240px;
+  --sider-collapsed-width: 80px;
+  --header-height: 64px;
+  
+  /* 颜色变量 (Vben / Ant Design 风格) */
+  --bg-sider: #001529;           /* 侧边栏深藏青 */
+  --bg-sider-active: #1890ff;    /* 侧边栏激活主题蓝 */
+  --bg-sider-hover: rgba(255, 255, 255, 0.08); /* 悬浮背景 */
+  --text-sider: rgba(255, 255, 255, 0.65);     /* 侧边栏文字 */
+  --text-sider-active: #ffffff;  /* 侧边栏激活文字 */
+  
+  --bg-header: #ffffff;          /* 顶栏白 */
+  --bg-main: #f0f2f5;            /* 主内容区浅灰 */
+  --bg-card: #ffffff;            /* 卡片纯白 */
+  
+  --border-color: #f0f0f0;       /* 柔和边框 */
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+/* 基础重置 */
+body {
+  background-color: var(--bg-main);
+  color: rgba(0, 0, 0, 0.85);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* 防止全局滚动，由主内容区滚动 */
+}
+
+/* 布局外层容器 */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   侧边栏 (Sider)
+   ========================================================================== */
+.app-sider {
+  width: var(--sider-width);
+  min-width: var(--sider-width);
+  background-color: var(--bg-sider);
+  color: var(--text-sider);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+  z-index: 100;
+}
+
+.sider-logo {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 19px;
+  font-weight: 800;
+  font-family: 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: padding 0.2s;
+  position: relative;
+}
+
+.logo-bottom-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4facfe, #00f2fe, transparent);
+  opacity: 0.7;
+  animation: scan-line 3s linear infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.sider-logo .logo-icon-wrapper {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes float-pulse {
+  0% {
+    transform: translateY(0px);
+    filter: drop-shadow(0 0 5px rgba(79, 172, 254, 0.6)) drop-shadow(0 0 10px rgba(0, 242, 254, 0.3));
+  }
+  100% {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 0 10px rgba(79, 172, 254, 1)) drop-shadow(0 0 20px rgba(0, 242, 254, 0.8));
+  }
+}
+
+.sider-logo i {
+  font-size: 22px;
+  color: #4facfe;
+}
+
+.sider-logo .logo-text {
+  background: linear-gradient(90deg, #00f2fe 0%, #4facfe 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.5));
+  animation: text-shimmer 4s linear infinite;
+}
+
+@keyframes text-shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.ai-core-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #00f2fe;
+  border-radius: 50%;
+  margin-left: 10px;
+  box-shadow: 0 0 8px #00f2fe;
+  animation: core-pulse 1.5s infinite;
+}
+
+@keyframes core-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 242, 254, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+}
+
+.sider-menu {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* 隐藏侧边栏滚动条 */
+.sider-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.sider-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.sider-menu-item {
+  padding: 0 16px;
+  margin-bottom: 4px;
+}
+
+.sider-menu-link {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  color: var(--text-sider);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.sider-menu-link i, .sider-menu-link .menu-icon {
+  font-size: 16px;
+  margin-right: 10px;
+  min-width: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.sider-menu-link:hover {
+  color: var(--text-sider-active);
+  background-color: var(--bg-sider-hover);
+}
+
+#progress-detail {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sider-menu-link.active {
+  color: var(--text-sider-active);
+  background-color: var(--bg-sider-active);
+  font-weight: 500;
+}
+
+.sider-menu-link.active i {
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   右侧主区域包裹 (Wrapper)
+   ========================================================================== */
+.app-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* 防止子元素撑破 Flex 容器 */
+  background-color: var(--bg-main);
+}
+
+/* ==========================================================================
+   顶栏 (Header)
+   ========================================================================== */
+.app-header {
+  height: var(--header-height);
+  background-color: var(--bg-header);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 90;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 14px;
+}
+
+.breadcrumb-item {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(0, 0, 0, 0.45);
+  content: "/";
+}
+
+.breadcrumb-item.active {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   主内容区 (Main Content)
+   ========================================================================== */
+.app-main {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 隐藏原来的 Bootstrap Tab 结构 */
+.nav-tabs {
+  display: none !important;
+}
+
+.tab-content {
+  height: 100%;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Vben 风格卡片 (Vben Style Cards)
+   ========================================================================== */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  transition: box-shadow 0.3s;
+  margin-bottom: 16px;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.card-header {
+  background-color: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 16px 20px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 500 !important;
+  font-size: 16px;
+  border-radius: calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px) 0 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-body {
+  padding: 20px !important;
+}
+
+/* Vben 风格的指标数据卡片 (Stats Card) */
+.vben-stat-card {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.vben-stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.vben-stat-title {
+  font-weight: 500;
+}
+
+.vben-stat-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid;
+}
+
+.vben-stat-value-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.vben-stat-value {
+  font-size: 30px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 1.2;
+}
+
+.vben-stat-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 24px;
+}
+
+.vben-stat-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+/* Vben 风格内部极简 Tab */
+.vben-inner-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.vben-inner-tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 15px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  margin-bottom: -1px;
+}
+
+.vben-inner-tab:hover {
+  color: var(--bg-sider-active);
+}
+
+.vben-inner-tab.active {
+  color: var(--bg-sider-active);
+  font-weight: 500;
+  border-bottom-color: var(--bg-sider-active);
+}

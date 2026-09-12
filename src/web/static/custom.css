@@ -1,0 +1,355 @@
+/**
+ * 自定义样式 - 工具类和特定组件样式
+ * 基于 Design Token 系统构建
+ * 
+ * 文件加载顺序：
+ * 1. design-tokens.css (设计变量)
+ * 2. components.css (组件样式)
+ * 3. responsive.css (响应式)
+ * 4. custom.css (工具类和特定样式)
+ */
+
+/* ========== 覆盖 Bootstrap 默认卡片样式 (Vben 风格) ========== */
+.card {
+    border: 1px solid var(--border-color, #f0f0f0) !important;
+    border-radius: var(--radius-md, 8px) !important;
+    box-shadow: none !important;
+    margin-bottom: 16px;
+    background-color: #fff;
+    transition: all 0.3s;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)) !important;
+}
+
+.card-header {
+    background-color: #fff !important;
+    border-bottom: 1px solid var(--border-color, #f0f0f0) !important;
+    padding: 16px 20px !important;
+    font-weight: 500 !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+    border-radius: calc(var(--radius-md, 8px) - 1px) calc(var(--radius-md, 8px) - 1px) 0 0 !important;
+}
+
+/* 按钮样式优化 */
+.btn {
+    border-radius: var(--radius-sm, 4px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+.btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+/* 表格样式优化 */
+.table {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.table > :not(caption) > * > * {
+    padding: 12px 16px;
+    border-bottom-color: #f0f0f0;
+}
+
+.table > thead {
+    background-color: #fafafa;
+}
+
+.table > thead > tr > th {
+    font-weight: 500;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: #fafafa;
+}
+
+/* 表单输入框优化 */
+.form-control, .form-select {
+    border-radius: var(--radius-sm, 4px);
+    border-color: #d9d9d9;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #40a9ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* ========== 工具类 - 尺寸 ========== */
+.progress-lg { height: 25px; }
+.progress-sm { height: 8px; }
+.progress-xs { height: 5px; }
+.progress-width-60 { width: 60px; }
+.progress-width-100 { width: 100px; }
+
+/* 宽度工具类 */
+.width-25 { width: 25px; }
+.width-30 { width: 30%; }
+.width-40 { width: 40%; }
+.width-50 { width: 50px; }
+.width-60 { width: 60px; }
+.width-70 { width: 70px; }
+.width-80 { width: 80px; }
+.width-90 { width: 90px; }
+.width-100 { width: 100px; }
+.width-120 { width: 120px; }
+.width-150 { width: 150px; }
+.width-100p { width: 100%; }
+
+/* 高度工具类 */
+.height-200 { height: 200px; }
+.height-250 { height: 250px; }
+.height-280 { height: 280px; min-height: 280px; }
+.height-500 { height: 500px; }
+.min-height-150 { min-height: 150px; }
+.min-height-300 { min-height: 300px; }
+
+/* 最大高度滚动区域 */
+.max-height-150 { max-height: 150px; overflow-y: auto; }
+.max-height-200 { max-height: 200px; overflow-y: auto; }
+.max-height-300 { max-height: 300px; overflow-y: auto; }
+.max-height-350 { max-height: 350px; overflow-y: auto; }
+.max-height-70vh { max-height: 70vh; overflow-y: auto; }
+
+/* 卡片滚动区域 */
+.card-scroll { max-height: 70vh; overflow-y: auto; }
+.card-scroll-sm { max-height: 350px; overflow-y: auto; }
+
+/* 显示/隐藏 */
+.hidden { display: none; }
+
+/* 隐藏客户列表头部的运行时扩展按钮 */
+button[onclick="smartFilterHighIntent()"],
+button[onclick="showBatchInteractModal()"] {
+    display: none !important;
+}
+
+/* 表格列宽 */
+.th-question { width: 30%; }
+.th-answer { width: 40%; }
+.th-category { width: 70px; }
+.th-confidence { width: 60px; }
+.th-status { width: 50px; }
+.th-size { width: 80px; }
+.th-chunks { width: 80px; }
+.th-usage { width: 50px; }
+.th-action { width: 100px; }
+.th-action-sm { width: 150px; }
+.th-checkbox { width: 25px; }
+
+/* 图表容器 */
+.chart-container { width: 100%; height: 200px; }
+.chart-container-md { width: 100%; height: 250px; }
+.chart-container-lg { width: 100%; height: 280px; min-height: 280px; }
+
+/* 字体大小 */
+.font-size-9 { font-size: 9px; }
+.font-size-10 { font-size: 10px; }
+.font-size-12 { font-size: 12px; }
+.font-size-48 { font-size: 48px; }
+.font-size-32 { font-size: 32px; }
+
+/* 图标大小 */
+.icon-lg { font-size: 1.5rem; }
+
+/* 图谱容器 */
+.graph-container { height: 500px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; position: relative; overflow: hidden; }
+.graph-container canvas { display: block; }
+.graph-loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; }
+
+/* 图谱预览 */
+.graph-preview { height: 120px; background: #f8f9fa; border-radius: 4px; }
+
+/* 答案显示区域 */
+.answer-display { white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+.templates-display { white-space: pre-wrap; max-height: 150px; overflow-y: auto; }
+
+/* 拖拽上传区域 */
+.drop-zone-dashed { cursor: pointer; border-style: dashed !important; }
+
+/* 表格响应式 */
+.table-scroll { max-height: 350px; overflow-y: auto; }
+.table-scroll-sm { max-height: 200px; overflow-y: auto; }
+
+/* Toast 样式 */
+.toast-min-width { min-width: 280px; }
+
+/* 文本截断 */
+.text-truncate-100 { max-width: 100px; }
+
+/* 最小宽度 */
+.min-width-60 { min-width: 60px; }
+.min-width-150 { min-width: 150px; }
+
+/* 头像样式 */
+.avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+
+/* 消息统计区域 */
+.message-stats { display: none; }
+
+/* 消息内容区域 */
+.message-content-scroll { overflow-y: auto; min-height: 300px; }
+
+/* RAG结果区域 */
+.rag-result-scroll { max-height: 150px; overflow-y: auto; }
+
+/* 进度条内联样式替代 - 用于 JavaScript 动态设置 */
+.progress-bar-dynamic { transition: width 0.3s ease; }
+
+/* ========== 应用主体样式 ========== */
+.app-body {
+  padding: var(--spacing-5);
+  background: var(--background-gradient);
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .app-body {
+    padding: var(--spacing-2);
+  }
+}
+
+/* ========== 工具类 - 替代内联样式 ========== */
+
+/* 小字体徽章 */
+.badge-xs {
+  font-size: var(--font-size-xs);
+  padding: 2px 6px;
+}
+
+/* 进度条尺寸 */
+.progress-width-60 { width: 60px; }
+.progress-width-100 { width: 100px; }
+.progress-height-4 { height: 4px; }
+.progress-height-5 { height: 5px; }
+.progress-height-6 { height: 6px; }
+.progress-height-8 { height: 8px; }
+.progress-height-20 { height: 20px; }
+.progress-height-25 { height: 25px; }
+
+/* 最小宽度 */
+.min-width-0 { min-width: 0; }
+.min-width-60 { min-width: 60px; }
+
+/* 最大宽度 */
+.max-width-100 { max-width: 100px; }
+.max-width-200 { max-width: 200px; }
+
+/* 小字体 */
+.font-size-9 { font-size: 9px; }
+.font-size-10 { font-size: 10px; }
+.font-size-12 { font-size: 12px; }
+
+/* 小按钮 */
+.btn-xs {
+  padding: 2px 8px;
+  font-size: 10px;
+  min-height: unset;
+}
+
+/* 超小按钮 - 用于紧凑布局 */
+.btn-xxs {
+  padding: 0 4px;
+  font-size: 9px;
+  min-height: unset;
+  line-height: 1.5;
+}
+
+/* 徽章小字体 */
+.badge-xxs {
+  font-size: 9px;
+  padding: 1px 4px;
+}
+
+/* ========== 图谱交互样式 ========== */
+.graph-container { cursor: grab; position: relative; overflow: hidden; }
+.graph-container:active { cursor: grabbing; }
+.graph-toolbar { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 4px; flex-direction: column; }
+.graph-toolbar .btn { width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #dee2e6; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 16px; transition: all 0.2s ease; }
+.graph-toolbar .btn:hover { background: #f0f0f0; transform: scale(1.05); }
+.graph-stats-bar { position: absolute; bottom: 10px; left: 10px; z-index: 10; background: rgba(255,255,255,0.92); padding: 6px 14px; border-radius: 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); backdrop-filter: blur(4px); }
+.graph-tooltip { position: absolute; background: rgba(0,0,0,0.88); color: white; padding: 10px 14px; border-radius: 8px; font-size: 12px; pointer-events: none; z-index: 100; max-width: 240px; line-height: 1.6; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+/* ========== 学习统计增强样式 ========== */
+.learning-stat-card { transition: all 0.3s ease; border-radius: 12px; overflow: hidden; }
+.learning-stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.memory-tier-bar { height: 10px; border-radius: 5px; transition: width 0.6s ease; }
+.learning-chart-container { width: 100%; height: 260px; }
+.urgency-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.urgency-high { background: #dc3545; animation: pulseUrgency 1.5s infinite; }
+.urgency-medium { background: #ffc107; }
+.urgency-low { background: #17a2b8; }
+@keyframes pulseUrgency { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* 学习历史时间线 */
+.learning-timeline { position: relative; padding-left: 24px; }
+.learning-timeline::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #667eea, #764ba2); }
+.learning-timeline-item { position: relative; margin-bottom: 14px; padding-left: 16px; }
+.learning-timeline-item::before { content: ''; position: absolute; left: -19px; top: 6px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #667eea; background: white; transition: all 0.2s ease; }
+.learning-timeline-item:hover::before { transform: scale(1.3); }
+.learning-timeline-item.approved::before { background: #28a745; border-color: #28a745; }
+.learning-timeline-item.rejected::before { background: #dc3545; border-color: #dc3545; }
+.learning-timeline-item.auto_approved::before { background: #17a2b8; border-color: #17a2b8; }
+.learning-timeline-item.pending::before { background: #ffc107; border-color: #ffc107; }
+
+/* 图谱预览增强 */
+.graph-preview-enhanced { height: 150px; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); border-radius: 10px; position: relative; overflow: hidden; cursor: pointer; transition: all 0.3s ease; }
+.graph-preview-enhanced:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.graph-preview-canvas { width: 100%; height: 100%; }
+
+/* 质量评分环形进度 */
+.quality-score-ring { position: relative; width: 80px; height: 80px; }
+.quality-score-ring svg { transform: rotate(-90deg); }
+.quality-score-ring .score-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: bold; }
+
+/* 冲突类型标签 */
+.conflict-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.conflict-contradiction { background: rgba(220,53,69,0.15); color: #dc3545; }
+.conflict-duplicate { background: rgba(255,193,7,0.15); color: #ffc107; }
+.conflict-similar { background: rgba(23,162,184,0.15); color: #17a2b8; }
+
+/* 实体详情面板增强 */
+.entity-detail-panel { border-left: 3px solid #667eea; background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%); }
+.entity-relation-item { padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; transition: all 0.2s ease; }
+.entity-relation-item:hover { background: rgba(102,126,234,0.1); }
+
+/* 获取任务页开关卡片 */
+.crawl-option-switch {
+  padding: 16px !important;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #fff;
+}
+
+.crawl-option-switch .crawl-option-switch__input {
+  float: none;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+}
+
+.crawl-option-switch .crawl-option-switch__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.crawl-option-switch .crawl-option-switch__label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.crawl-option-switch .crawl-option-switch__hint {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.5;
+}

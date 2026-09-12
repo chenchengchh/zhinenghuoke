@@ -1,0 +1,49 @@
+                <div class="col-12 mb-3" data-knowledge-workspace="assets">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-xl">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="small text-muted">知识条目数</div>
+                                    <div class="fs-3 fw-bold text-primary" id="stat-knowledge-total">0</div>
+                                    <div class="small text-muted">业务侧可管理的知识记录总数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="small text-muted">可用知识</div>
+                                    <div class="fs-3 fw-bold text-success" id="stat-knowledge-enabled">0</div>
+                                    <div class="small text-muted">知识库当前可维护的有效条目</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="small text-muted">向量索引数</div>
+                                    <div class="fs-3 fw-bold text-info" id="stat-vector-count">0</div>
+                                    <div class="small text-muted">检索侧已建立的向量索引记录数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl">
+                            <button type="button" class="card h-100 w-100 text-start border-warning bg-white" onclick="openPendingValidationModal()">
+                                <div class="card-body">
+                                    <div class="small text-muted">待审核</div>
+                                    <div class="fs-3 fw-bold text-warning" id="stat-pending-validation">0</div>
+                                    <div class="small text-muted">点击查看待审核知识并直接审核</div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl">
+                            <button type="button" class="card h-100 w-100 text-start border-secondary bg-white" onclick="openLearnedHistoryModal()">
+                                <div class="card-body">
+                                    <div class="small text-muted">已学习</div>
+                                    <div class="fs-3 fw-bold text-secondary" id="stat-learned-total">0</div>
+                                    <div class="small text-muted">点击查看已经学习的内容</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>

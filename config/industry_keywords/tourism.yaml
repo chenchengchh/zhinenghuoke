@@ -1,0 +1,97 @@
+# 旅游行业配置
+# 用于旅游场景的关键词、模式、意图信号
+
+industry: tourism
+
+patterns:
+  - name: 跟团游
+    keywords:
+      - 跟团
+      - 团队游
+      - 包团
+      - 组团
+      - 跟团游
+
+  - name: 自由行
+    keywords:
+      - 自由行
+      - 自助游
+      - 自驾
+      - 自助
+
+  - name: 景点门票
+    keywords:
+      - 景点
+      - 景区
+      - 门票
+      - 游玩
+      - 公园
+      - 博物馆
+
+  - name: 亲子游
+    keywords:
+      - 亲子
+      - 带孩子
+      - 儿童
+      - 小孩
+      - 宝宝
+
+  - name: 出境游
+    keywords:
+      - 出境
+      - 出国
+      - 国外
+      - 海外
+
+intent_signals:
+  conversion:
+    - 报名
+    - 预订
+    - 下单
+    - 怎么报名
+    - 立即预订
+    - 锁名额
+    - 留个联系方式
+  inquiry:
+    - 多少钱
+    - 价格
+    - 费用
+    - 报价
+    - 怎么收费
+  hesitation:
+    - 考虑一下
+    - 再看看
+    - 不太确定
+    - 还在比较
+
+category_keywords:
+  price:
+    - 价格
+    - 费用
+    - 报价
+    - 多少钱
+    - 便宜
+  attractions:
+    - 景点
+    - 好玩
+    - 推荐
+    - 打卡
+    - 必去
+  itinerary:
+    - 线路
+    - 行程
+    - 攻略
+    - 几天
+    - 几天几夜
+  transportation:
+    - 大巴
+    - 高铁
+    - 飞机
+    - 自驾
+    - 包车
+  accommodation:
+    - 酒店
+    - 住宿
+    - 民宿
+    - 客栈
+    - 几星

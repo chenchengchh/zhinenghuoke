@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+
+# Model files (too large for git, kept locally only)
+models/
+*.safetensors
+*.bin
+*.onnx
+
+# Data directories (runtime generated)
+data/browser_user_data/
+data/crawler_browser_user_data/
+data/app_state/
+data/chroma_db/
+data/archives/
+data/enterprises/
+data/export_bundle/
+data/feedback/
+data/knowledge_files/
+data/learning/
+data/*.db
+data/*.sqlite3
+data/*.lock
+data/license*.dat
+logs/
+*.log
+
+# Build and packaging outputs
+build/
+dist/
+release_dist/
+test_install_popup2/
+anzhuangbao/
+packaging/cache/
+
+# IDE
+.idea/
+.vscode/
+.trae/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Temp
+*.tmp
+*.bak
+_*.ps1
+tmp/
+tmp_*/
+tmp_*.py
+debug_output*.txt
+test_result.txt
+test_find_input.py
+test_find_input_simple.py
+
+# Secrets
+.env

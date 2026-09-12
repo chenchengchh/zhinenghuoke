@@ -1,0 +1,392 @@
+/**
+ * 响应式设计与移动端优化
+ * 确保在各种设备上都有良好的用户体验
+ */
+
+/* ========== 基础移动端优化 ========== */
+
+@media (max-width: 768px) {
+  /* 页面布局 */
+  body {
+    padding: var(--spacing-2);
+  }
+  
+  .container-fluid {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-lg) !important;
+  }
+  
+  /* 头部优化 */
+  header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: var(--spacing-3);
+  }
+  
+  header h1 {
+    font-size: var(--font-size-xl);
+    margin-bottom: 0;
+  }
+  
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+  
+  /* 导航标签优化 */
+  .nav-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: var(--spacing-1);
+  }
+  
+  .nav-tabs .nav-link {
+    white-space: nowrap;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    margin-right: var(--spacing-2);
+    border-radius: var(--radius-md);
+  }
+  
+  .nav-tabs .nav-link.active {
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  /* 卡片布局优化 */
+  .card {
+    margin-bottom: var(--spacing-3);
+  }
+  
+  .card-body {
+    padding: var(--spacing-4);
+  }
+  
+  /* 列布局调整为单列 */
+  .row > [class*="col-"] {
+    width: 100%;
+    margin-bottom: var(--spacing-3);
+  }
+  
+  /* 表格优化 - 横向滚动 */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+  }
+  
+  .table {
+    min-width: 600px;
+  }
+  
+  /* 按钮优化 */
+  .btn {
+    width: 100%;
+    margin-bottom: var(--spacing-2);
+  }
+  
+  .btn-group .btn {
+    width: auto;
+    margin-bottom: 0;
+  }
+  
+  /* 表单优化 */
+  .form-group {
+    margin-bottom: var(--spacing-3);
+  }
+  
+  .form-control,
+  .form-select {
+    font-size: 16px; /* 防止 iOS 自动缩放 */
+  }
+  
+  /* 模态框优化 */
+  .modal-dialog {
+    margin: var(--spacing-2);
+    max-width: 100%;
+  }
+  
+  .modal-content {
+    border-radius: var(--radius-lg);
+  }
+  
+  .modal-header {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  
+  .modal-body {
+    padding: var(--spacing-4);
+  }
+  
+  .modal-footer {
+    padding: var(--spacing-3);
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+  
+  /* Toast 通知优化 */
+  .toast-container {
+    left: var(--spacing-4);
+    right: var(--spacing-4);
+    top: auto;
+    bottom: var(--spacing-4);
+  }
+  
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+/* ========== 小屏手机 (≤375px) ========== */
+
+@media (max-width: 375px) {
+  header h1 {
+    font-size: var(--font-size-lg);
+  }
+  
+  .nav-tabs .nav-link {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+  
+  .card-body {
+    padding: var(--spacing-3);
+  }
+  
+  .stat-card-value {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* ========== 平板设备 (768px - 1024px) ========== */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container-fluid {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+  
+  .row {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+  
+  [class*="col-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* ========== 触摸设备优化 ========== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* 增大触摸目标 */
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+  
+  .nav-tabs .nav-link {
+    min-height: 44px;
+  }
+  
+  /* 移除 hover 效果，改用 active */
+  .card:hover {
+    transform: none;
+  }
+  
+  .card:active {
+    transform: scale(0.98);
+  }
+  
+  /* 优化下拉菜单 */
+  select {
+    font-size: 16px;
+    padding: var(--spacing-3);
+  }
+  
+  /* 优化链接点击区域 */
+  a {
+    padding: var(--spacing-2);
+    margin: calc(var(--spacing-2) * -1);
+  }
+}
+
+/* ========== 横屏模式优化 ========== */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  header {
+    padding: var(--spacing-2);
+  }
+  
+  header h1 {
+    font-size: var(--font-size-base);
+  }
+  
+  .nav-tabs {
+    padding: 0 var(--spacing-2);
+  }
+  
+  .card {
+    margin-bottom: var(--spacing-2);
+  }
+  
+  .card-body {
+    padding: var(--spacing-3);
+  }
+}
+
+/* ========== 大屏桌面优化 ========== */
+
+@media (min-width: 1400px) {
+  .container-fluid {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+  
+  .row {
+    justify-content: center;
+  }
+}
+
+/* ========== 打印样式 ========== */
+
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+  
+  .container-fluid {
+    background: white;
+    box-shadow: none;
+    padding: 0;
+  }
+  
+  /* 隐藏不需要的元素 */
+  header,
+  .nav-tabs,
+  .btn,
+  .toast-container,
+  .modal {
+    display: none !important;
+  }
+  
+  /* 优化表格打印 */
+  .table {
+    page-break-inside: avoid;
+  }
+  
+  .table tr {
+    page-break-inside: avoid;
+  }
+  
+  /* 优化卡片打印 */
+  .card {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* ========== 折叠区域优化 ========== */
+
+@media (max-width: 768px) {
+  .collapse-mobile {
+    display: none;
+  }
+  
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* ========== 隐藏/显示控制 ========== */
+
+/* 移动端隐藏 */
+.hide-mobile {
+  display: none !important;
+}
+
+@media (min-width: 769px) {
+  .hide-mobile {
+    display: block !important;
+  }
+}
+
+/* 桌面端隐藏 */
+.hide-desktop {
+  display: block !important;
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* ========== 响应式间距 ========== */
+
+@media (max-width: 768px) {
+  .mb-4,
+  .mb-md-4 {
+    margin-bottom: var(--spacing-3) !important;
+  }
+  
+  .mt-4,
+  .mt-md-4 {
+    margin-top: var(--spacing-3) !important;
+  }
+  
+  .p-4,
+  .p-md-4 {
+    padding: var(--spacing-3) !important;
+  }
+}
+
+/* ========== 响应式字体 ========== */
+
+@media (max-width: 768px) {
+  .h1, h1 {
+    font-size: calc(var(--font-size-2xl) * 1.1);
+  }
+  
+  .h2, h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .h3, h3 {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* ========== 安全区域适配 (iPhone X 等) ========== */
+
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(var(--spacing-4), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-4), env(safe-area-inset-right));
+  }
+  
+  .container-fluid {
+    padding-left: max(var(--spacing-3), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-3), env(safe-area-inset-right));
+  }
+  
+  header {
+    padding-top: max(var(--spacing-4), env(safe-area-inset-top));
+  }
+  
+  .toast-container {
+    bottom: max(var(--spacing-4), env(safe-area-inset-bottom));
+  }
+}

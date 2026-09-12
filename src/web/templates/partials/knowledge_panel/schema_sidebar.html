@@ -1,0 +1,29 @@
+                        <div class="col-lg-4">
+                            <div class="card h-100 workspace-surface workspace-sticky-lg">
+                                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">🧭 行业模板列表 (<span id="industry-schema-count">0</span>)</span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary" onclick="KnowledgeApp.loadIndustrySchemas(true)" title="刷新">🔄</button>
+                                        <button class="btn btn-primary" onclick="KnowledgeApp.createIndustrySchemaFromTemplate()">+ 新建</button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <div class="workspace-soft-panel rounded p-2 small mb-2">
+                                        <div class="fw-bold mb-1">当前生效模板</div>
+                                        <div><span class="fw-bold" id="industry-schema-active">-</span></div>
+                                    </div>
+                                    <div class="workspace-note-card rounded p-2 small mb-2 text-muted">
+                                        先在左侧选模板，再在右侧修改业务信息和字段结构；保存后可直接设为启用，不再重复显示多段说明。
+                                    </div>
+                                    <div class="workspace-soft-panel rounded p-2 small mb-2">
+                                        <div class="fw-bold mb-1">当前启用方式</div>
+                                        <div class="mb-1">默认处理规则: <span class="fw-bold" id="industry-schema-resolution-mode">-</span></div>
+                                        <div class="mb-1">没有匹配时使用: <span class="fw-bold" id="industry-schema-fallback">-</span></div>
+                                        <div class="mb-1">是否要求企业单独绑定: <span class="fw-bold" id="industry-schema-require-binding">-</span></div>
+                                        <div>是否允许临时指定模板: <span class="fw-bold" id="industry-schema-allow-override">-</span></div>
+                                    </div>
+                                    <div class="small text-muted mb-2">左侧负责模板选择，右侧负责模板配置和校验。</div>
+                                    <div id="industry-schema-list" class="list-group small"></div>
+                                </div>
+                            </div>
+                        </div>

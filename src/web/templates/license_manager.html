@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火客授权验证码管理系统</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-bg: #1e1b4b;
+            --sidebar-active: #312e81;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Microsoft YaHei UI", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: 240px;
+            background: var(--sidebar-bg);
+            color: #c7d2fe;
+            padding: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .sidebar-header p {
+            font-size: 11px;
+            color: #818cf8;
+            margin: 0;
+        }
+        .sidebar-nav { flex: 1; padding: 12px 0; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: #a5b4fc;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .nav-item.active { background: var(--sidebar-active); color: #fff; border-left: 3px solid #818cf8; }
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* 主内容 */
+        .main {
+            margin-left: 240px;
+            padding: 24px 28px;
+            min-height: 100vh;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #fff;
+            padding: 28px 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
+        }
+        .page-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .page-header p { font-size: 13px; opacity: 0.85; margin: 0; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        /* 登录遮罩 */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            backdrop-filter: blur(4px);
+        }
+        .login-box {
+            background: #fff;
+            padding: 36px;
+            border-radius: 16px;
+            width: 380px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        .login-box .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .login-box .logo-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .login-box h2 { text-align: center; font-size: 20px; margin-bottom: 6px; }
+        .login-box .subtitle { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+
+        /* 卡片 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .icon { font-size: 18px; }
+
+        /* 表单 */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .form-group label .req { color: var(--danger); margin-left: 2px; }
+        .form-group .hint { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+        .form-control {
+            width: 100%;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        textarea.form-control { font-family: Consolas, "Courier New", monospace; resize: vertical; min-height: 80px; }
+        select.form-control { cursor: pointer; }
+
+        /* 功能权限 */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .feature-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+            transition: all 0.15s;
+            font-size: 13px;
+        }
+        .feature-toggle:hover { border-color: var(--primary); }
+        .feature-toggle input { margin: 0; cursor: pointer; accent-color: var(--primary); }
+        .feature-toggle.enabled { border-color: var(--success); background: #f0fdf4; }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: #a5b4fc; cursor: not-allowed; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #059669; }
+        .btn-secondary { background: #e2e8f0; color: var(--text); }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+
+        /* 警告框 */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert.show { display: block; }
+        .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        /* 结果框 */
+        .result-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .license-key-display {
+            background: #f1f5f9;
+            border: 2px dashed #818cf8;
+            padding: 16px 18px;
+            border-radius: 10px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            word-break: break-all;
+            margin: 14px 0 10px;
+            position: relative;
+        }
+        .license-key-display .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            font-size: 11px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* 元信息网格 */
+        .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; margin: 12px 0; font-size: 13px; }
+        .meta-grid .label { color: var(--text-muted); }
+        .meta-grid .value { font-weight: 500; word-break: break-all; }
+
+        /* 标签页 */
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .tab-bar button {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            margin-bottom: -1px;
+        }
+        .tab-bar button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 统计卡片 */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+        }
+        .stat-card .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .stat-card .stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+        .stat-card .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* 进度条 */
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); border-radius: 3px; transition: width 0.3s; }
+
+        /* 加载动画 */
+        .spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 响应式 */
+        @media (max-width: 1100px) {
+            .sidebar { width: 200px; }
+            .main { margin-left: 200px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+
+        /* 表格 */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th { background: #f8fafc; padding: 10px 14px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .data-table tr:hover td { background: #f8fafc; }
+        .data-table .mono { font-family: Consolas, monospace; font-size: 12px; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            background: #1e293b;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+<!-- 登录遮罩 -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="logo">
+            <div class="logo-icon">🔐</div>
+        </div>
+        <h2>授权管理登录</h2>
+        <p class="subtitle">请输入授权管理后台账户凭据</p>
+        <div class="alert alert-danger" id="loginAlert"></div>
+        <div class="form-group">
+            <label>管理员账户</label>
+            <input type="text" class="form-control" id="loginUser" autocomplete="off" placeholder="请输入管理员账户">
+        </div>
+        <div class="form-group">
+            <label>登录密码</label>
+            <input type="password" class="form-control" id="loginPass" autocomplete="off" placeholder="请输入密码">
+        </div>
+        <button class="btn btn-primary" style="width:100%" id="loginBtn" onclick="doLogin()">登录</button>
+    </div>
+</div>
+
+<!-- 侧边栏 -->
+<nav class="sidebar" id="mainNav" style="display:none">
+    <div class="sidebar-header">
+        <h1>🔐 火客授权管理</h1>
+        <p>Huoke License System v2.0</p>
+    </div>
+    <div class="sidebar-nav">
+        <button class="nav-item active" onclick="switchPage('generator', this)">
+            <span class="icon">⚙️</span><span>授权生成</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('decoder', this)">
+            <span class="icon">🔍</span><span>授权解码</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('validator', this)">
+            <span class="icon">✅</span><span>授权校验</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('history', this)">
+            <span class="icon">📋</span><span>生成历史</span>
+        </button>
+    </div>
+    <div class="sidebar-footer">
+        <div>License Generator v2</div>
+        <div style="margin-top:2px">HMAC-SHA256 / Ed25519</div>
+    </div>
+</nav>
+
+<!-- 主内容 -->
+<div class="main" id="mainContent" style="display:none">
+    <!-- 页头 -->
+    <div class="page-header">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <h2 id="pageTitle">授权验证码生成</h2>
+                <p id="pageSubtitle">生成带设备绑定和功能限制的软件授权码</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <span class="badge badge-success" id="algBadge">HMAC-SHA256</span>
+                <button class="btn btn-secondary btn-sm" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 1: 生成 -->
+    <div class="tab-content active" id="tab-generator">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <!-- 左：参数表单 -->
+            <div class="card">
+                <div class="card-title"><span class="icon">⚙️</span>授权参数</div>
+                <div class="alert alert-danger" id="genAlert"></div>
+
+                <div class="form-group">
+                    <label>授权类型 <span class="req">*</span></label>
+                    <select class="form-control" id="licenseType" onchange="updateDurationHint()">
+                        <option value="trial_7d">7天免费试用 (trial_7d)</option>
+                        <option value="month_1">1个月授权 (month_1)</option>
+                        <option value="month_3">3个月授权 (month_3)</option>
+                        <option value="month_6">6个月授权 (month_6)</option>
+                        <option value="year_1">1年授权 (year_1)</option>
+                        <option value="permanent">永久授权 (permanent)</option>
+                    </select>
+                    <div class="hint" id="durationHint">有效期：7 天</div>
+                </div>
+
+                <div class="form-group">
+                    <label>客户名称</label>
+                    <input type="text" class="form-control" id="customerName" placeholder="选填，用于标识客户">
+                </div>
+
+                <div class="form-group">
+                    <label>注册手机号 <span class="req">*</span></label>
+                    <input type="text" class="form-control" id="phoneNumber" placeholder="11位手机号，用于激活校验">
+                    <div class="hint">激活时手机号必须与此处一致</div>
+                </div>
+
+                <div class="form-group">
+                    <label>设备请求码 / 机器码 <span class="req">*</span></label>
+                    <textarea class="form-control" id="requestCode" placeholder="粘贴客户端导出的 request_code（base64url 字符串）&#10;或直接填写 machine_hash（64位 SHA-256 hex）&#10;两者任填其一，请求码会自动解析出机器码"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>授权编号（可选）</label>
+                    <input type="text" class="form-control" id="licenseId" placeholder="留空自动生成 LIC-YYYYMMDDHHMMSS">
+                </div>
+
+                <div class="form-group">
+                    <label>功能权限</label>
+                    <div class="features-grid">
+                        <label class="feature-toggle enabled" id="featCrawlerToggle">
+                            <input type="checkbox" id="featCrawler" checked>
+                            <span>🕷️ 爬虫功能</span>
+                        </label>
+                        <label class="feature-toggle enabled" id="featMonitorToggle">
+                            <input type="checkbox" id="featMonitor" checked>
+                            <span>👁️ 监听功能</span>
+                        </label>
+                        <label class="feature-toggle enabled" id="featAutoReplyToggle">
+                            <input type="checkbox" id="featAutoReply" checked>
+                            <span>💬 自动回复</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="genBtn" onclick="generateLicense()">
+                        🔑 生成授权码
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearForm()">清空</button>
+                    <button class="btn btn-danger btn-sm" onclick="generateDemo()">📝 生成演示码</button>
+                </div>
+            </div>
+
+            <!-- 右：结果展示 -->
+            <div class="card">
+                <div class="card-title"><span class="icon">📄</span>生成结果</div>
+                <div class="alert alert-success" id="successAlert"></div>
+                <div id="resultEmpty" style="color:var(--text-muted);text-align:center;padding:50px 0;border:2px dashed var(--border);border-radius:10px">
+                    暂无结果<br><span style="font-size:12px">请在左侧填写参数并点击"生成授权码"</span>
+                </div>
+                <div id="resultContent" style="display:none">
+                    <div class="meta-grid" id="metaGrid"></div>
+
+                    <div style="font-weight:600;margin:14px 0 6px;font-size:13px">授权码（license_key）</div>
+                    <div class="license-key-display" id="licenseKeyBox">
+                        <button class="copy-btn" onclick="copyKey()">复制</button>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-success btn-sm" onclick="copyKey()">📋 复制授权码</button>
+                        <button class="btn btn-secondary btn-sm" onclick="copyAll()">📄 复制完整信息</button>
+                    </div>
+
+                    <div style="font-weight:600;margin:16px 0 6px;font-size:13px">签名载荷（JSON）</div>
+                    <div class="result-box" id="payloadBox"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: 解码 -->
+    <div class="tab-content" id="tab-decoder">
+        <div class="card" style="max-width:800px">
+            <div class="card-title"><span class="icon">🔍</span>授权码解码</div>
+            <div class="alert alert-danger" id="decAlert"></div>
+            <div class="form-group">
+                <label>授权码（license_key）<span class="req">*</span></label>
+                <textarea class="form-control" id="decodeKey" placeholder="粘贴 license_key（base64url 字符串）" style="min-height:120px;font-size:12px"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="decodeLicense()">🔍 解码</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('decodeKey').value='';document.getElementById('decResult').style.display='none'">清空</button>
+            </div>
+            <div id="decResult" style="display:none;margin-top:20px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div>
+                        <div class="meta-grid" id="decMetaGrid" style="grid-template-columns:1fr"></div>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;margin-bottom:8px;font-size:13px">完整 Payload</div>
+                        <div class="result-box" id="decPayloadBox" style="max-height:300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: 校验 -->
+    <div class="tab-content" id="tab-validator">
+        <div class="card" style="max-width:800px">
+            <div class="card-title"><span class="icon">✅</span>授权码校验</div>
+            <div class="alert alert-info" id="valInfo">校验将验证授权码的签名完整性、手机号格式、有效期及设备绑定</div>
+            <div class="alert alert-danger" id="valAlert"></div>
+            <div class="form-group">
+                <label>授权码（license_key）<span class="req">*</span></label>
+                <textarea class="form-control" id="validateKey" placeholder="粘贴 license_key 进行校验" style="min-height:100px;font-size:12px"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="validateLicense()">✅ 校验授权码</button>
+            </div>
+            <div id="valResult" style="display:none;margin-top:20px">
+                <div class="meta-grid" id="valMetaGrid" style="grid-template-columns:1fr"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 4: 历史 -->
+    <div class="tab-content" id="tab-history">
+        <div class="card">
+            <div class="card-title"><span class="icon">📋</span>生成历史（本次会话）</div>
+            <div id="historyEmpty" style="color:var(--text-muted);text-align:center;padding:40px 0">
+                暂无生成记录
+            </div>
+            <div id="historyContent" style="display:none">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>授权类型</th>
+                            <th>客户</th>
+                            <th>手机号</th>
+                            <th>授权编号</th>
+                            <th>有效期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ 全局状态 ============
+let _history = [];
+window._lastResult = null;
+
+// ============ 登录 ============
+async function doLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value;
+    const alertBox = document.getElementById('loginAlert');
+    const btn = document.getElementById('loginBtn');
+    if (!u || !p) { showAlert(alertBox, '请输入账户和密码'); return; }
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 登录中...';
+    try {
+        const resp = await fetch('/api/license/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: u, password: p})
+        });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'block';
+            // 获取签名算法信息
+            fetchAlgInfo();
+        } else {
+            showAlert(alertBox, data.detail || '登录失败');
+        }
+    } catch (e) {
+        showAlert(alertBox, '网络错误：' + e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = '登录';
+    }
+}
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// 获取签名算法信息
+async function fetchAlgInfo() {
+    // 尝试从生成接口获取算法信息
+    const badge = document.getElementById('algBadge');
+    badge.textContent = 'HMAC-SHA256';
+    badge.className = 'badge badge-info';
+}
+
+// ============ 页面切换 ============
+function switchPage(name, btn) {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+
+    const titles = {
+        generator: ['授权验证码生成', '生成带设备绑定和功能限制的软件授权码'],
+        decoder: ['授权码解码', '查看授权码的内部载荷信息'],
+        validator: ['授权码校验', '验证授权码的签名完整性和有效期'],
+        history: ['生成历史', '本次会话生成的授权码记录']
+    };
+    document.getElementById('pageTitle').textContent = titles[name][0];
+    document.getElementById('pageSubtitle').textContent = titles[name][1];
+}
+
+// ============ Tab 切换（内部） ============
+function switchTab(name, btn) {
+    btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    btn.closest('.card').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ============ 生成 ============
+const DURATION_MAP = {
+    trial_7d:'7 天', month_1:'30 天', month_3:'90 天',
+    month_6:'180 天', year_1:'365 天', permanent:'永久'
+};
+
+function updateDurationHint() {
+    const v = document.getElementById('licenseType').value;
+    document.getElementById('durationHint').textContent = '有效期：' + DURATION_MAP[v];
+}
+
+// 功能权限开关样式
+['Crawler','Monitor','AutoReply'].forEach(name => {
+    const toggle = document.getElementById('feat' + name + 'Toggle');
+    const checkbox = document.getElementById('feat' + name);
+    checkbox.addEventListener('change', () => {
+        toggle.classList.toggle('enabled', checkbox.checked);
+    });
+});
+
+async function generateLicense() {
+    const alertBox = document.getElementById('genAlert');
+    const successBox = document.getElementById('successAlert');
+    alertBox.classList.remove('show'); successBox.classList.remove('show');
+
+    const body = {
+        license_type: document.getElementById('licenseType').value,
+        customer_name: document.getElementById('customerName').value.trim(),
+        phone_number: document.getElementById('phoneNumber').value.trim(),
+        request_code: document.getElementById('requestCode').value.trim(),
+        machine_hash: document.getElementById('machineHash') ? document.getElementById('machineHash').value.trim() : '',
+        license_id: document.getElementById('licenseId').value.trim(),
+        features: {
+            crawler: document.getElementById('featCrawler').checked,
+            monitor: document.getElementById('featMonitor').checked,
+            auto_reply: document.getElementById('featAutoReply').checked,
+        }
+    };
+
+    if (!body.phone_number) {
+        showAlert(alertBox, '注册手机号不能为空');
+        return;
+    }
+    if (!body.request_code && !body.machine_hash) {
+        showAlert(alertBox, '设备请求码或机器码不能为空');
+        return;
+    }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 生成中...';
+    try {
+        const resp = await fetch('/api/license/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+            showResult(data.data);
+            addHistory(data.data);
+            successBox.textContent = '✅ 授权码生成成功！';
+            successBox.classList.add('show');
+            setTimeout(() => successBox.classList.remove('show'), 3000);
+        } else {
+            showAlert(alertBox, data.detail || '生成失败');
+        }
+    } catch (e) {
+        showAlert(alertBox, '网络错误：' + e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = '🔑 生成授权码';
+    }
+}
+
+async function generateDemo() {
+    const alertBox = document.getElementById('genAlert');
+    alertBox.classList.remove('show');
+    if (!confirm('确定生成演示授权码？\n演示码将使用手机号 13800138000，不绑定真实设备。')) return;
+    try {
+        const resp = await fetch('/api/license/demo/permanent', { method: 'GET' });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+            // 解码演示码
+            try {
+                const decResp = await fetch('/api/license/decode', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({license_key: data.license_key})
+                });
+                const decData = await decResp.json();
+                if (decData.success) {
+                    const fullData = {
+                        license_key: data.license_key,
+                        license_type: decData.data.license_type || 'permanent',
+                        license_type_label: '永久授权（演示）',
+                        valid_days: '永久',
+                        customer_name: '演示用户',
+                        phone_number: decData.data.phone_number || '13800138000',
+                        license_id: decData.data.license_id || '',
+                        machine_hash: decData.data.machine_hash || '（不绑定设备）',
+                        features: decData.data.features || {crawler:true,monitor:true,auto_reply:true},
+                        signed_payload: decData.data,
+                    };
+                    showResult(fullData);
+                    addHistory(fullData);
+                    showToast('演示授权码已生成', 'success');
+                }
+            } catch(e2) {
+                showAlert(alertBox, '生成成功但解码失败：' + e2.message);
+            }
+        } else {
+            showAlert(alertBox, data.detail || '演示码生成失败');
+        }
+    } catch (e) {
+        showAlert(alertBox, '网络错误：' + e.message);
+    }
+}
+
+function showResult(d) {
+    document.getElementById('resultEmpty').style.display = 'none';
+    document.getElementById('resultContent').style.display = 'block';
+
+    const features = d.features || {};
+    const featText = [
+        features.crawler ? '✅ 爬虫' : '❌ 爬虫',
+        features.monitor ? '✅ 监听' : '❌ 监听',
+        features.auto_reply ? '✅ 自动回复' : '❌ 自动回复',
+    ].join(' / ');
+
+    const expireText = d.valid_days === '永久' ? '永久' : (d.valid_days ? d.valid_days + ' 天' : '—');
+    const machineDisplay = d.machine_hash && d.machine_hash.length === 64
+        ? d.machine_hash.substring(0, 12) + '...' + d.machine_hash.substring(52)
+        : (d.machine_hash || '—');
+
+    const meta = [
+        ['授权类型', d.license_type_label || d.license_type || '—'],
+        ['有效期', expireText],
+        ['客户名称', d.customer_name || '—'],
+        ['注册手机号', d.phone_number || '—'],
+        ['授权编号', d.license_id || '—'],
+        ['设备指纹', machineDisplay],
+        ['功能权限', featText],
+    ];
+    document.getElementById('metaGrid').innerHTML = meta.map(([l, v]) =>
+        `<div><span class="label">${l}：</span><span class="value">${v}</span></div>`
+    ).join('');
+
+    document.getElementById('licenseKeyBox').innerHTML =
+        '<button class="copy-btn" onclick="copyKey()">复制</button>' + (d.license_key || '');
+    document.getElementById('payloadBox').textContent = JSON.stringify(d.signed_payload || {}, null, 2);
+    window._lastResult = d;
+}
+
+function addHistory(d) {
+    _history.unshift({...d, time: new Date().toLocaleString()});
+    renderHistory();
+}
+
+function renderHistory() {
+    const empty = document.getElementById('historyEmpty');
+    const content = document.getElementById('historyContent');
+    const tbody = document.getElementById('historyTable');
+    if (_history.length === 0) {
+        empty.style.display = 'block';
+        content.style.display = 'none';
+        return;
+    }
+    empty.style.display = 'none';
+    content.style.display = 'block';
+    tbody.innerHTML = _history.map((h, i) => {
+        const expireText = h.valid_days === '永久' ? '永久' : (h.valid_days ? h.valid_days + '天' : '—');
+        const phone = h.phone_number ? h.phone_number.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '—';
+        return `<tr>
+            <td><span class="badge badge-info">${h.license_type_label || h.license_type || '—'}</span></td>
+            <td>${h.customer_name || '—'}</td>
+            <td class="mono">${phone}</td>
+            <td class="mono" style="font-size:11px">${h.license_id || '—'}</td>
+            <td>${expireText}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick="recopy(${i})">复制</button></td>
+        </tr>`;
+    }).join('');
+}
+
+function recopy(i) {
+    const h = _history[i];
+    if (h && h.license_key) {
+        navigator.clipboard.writeText(h.license_key).then(() => showToast('已复制到剪贴板', 'success'));
+    }
+}
+
+function copyKey() {
+    const k = window._lastResult && window._lastResult.license_key;
+    if (!k) return;
+    navigator.clipboard.writeText(k).then(() => showToast('授权码已复制', 'success'));
+}
+
+function copyAll() {
+    if (!window._lastResult) return;
+    navigator.clipboard.writeText(JSON.stringify(window._lastResult, null, 2)).then(() => showToast('完整信息已复制', 'success'));
+}
+
+function clearForm() {
+    ['customerName','phoneNumber','requestCode','licenseId'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('licenseType').value = 'trial_7d';
+    updateDurationHint();
+    document.getElementById('featCrawler').checked = true;
+    document.getElementById('featMonitor').checked = true;
+    document.getElementById('featAutoReply').checked = true;
+    ['Crawler','Monitor','AutoReply'].forEach(name => {
+        document.getElementById('feat' + name + 'Toggle').classList.add('enabled');
+    });
+    document.getElementById('genAlert').classList.remove('show');
+    document.getElementById('resultEmpty').style.display = 'block';
+    document.getElementById('resultContent').style.display = 'none';
+    window._lastResult = null;
+}
+
+function logout() {
+    if (!confirm('确定退出登录？')) return;
+    location.reload();
+}
+
+// ============ 解码 ============
+async function decodeLicense() {
+    const alertBox = document.getElementById('decAlert');
+    alertBox.classList.remove('show');
+    const key = document.getElementById('decodeKey').value.trim();
+    if (!key) { showAlert(alertBox, '请粘贴 license_key'); return; }
+    try {
+        const resp = await fetch('/api/license/decode', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({license_key: key})
+        });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+            showDecResult(data.data);
+        } else {
+            showAlert(alertBox, data.detail || '解码失败');
+        }
+    } catch (e) {
+        showAlert(alertBox, '网络错误：' + e.message);
+    }
+}
+
+function showDecResult(d) {
+    document.getElementById('decResult').style.display = 'block';
+    const features = d.features || {};
+    const featText = [
+        features.crawler ? '✅ 爬虫' : '❌ 爬虫',
+        features.monitor ? '✅ 监听' : '❌ 监听',
+        features.auto_reply ? '✅ 自动回复' : '❌ 自动回复',
+    ].join(' / ');
+
+    let expireText = '—';
+    if (d.expire_at) {
+        const d2 = new Date(d.expire_at);
+        if (!isNaN(d2)) expireText = d2.toLocaleString();
+    } else if (d.license_type === 'permanent') {
+        expireText = '永久';
+    }
+
+    let issuedText = '—';
+    if (d.issued_at) {
+        const d3 = new Date(d.issued_at);
+        if (!isNaN(d3)) issuedText = d3.toLocaleString();
+    }
+
+    const machineDisplay = d.machine_hash && d.machine_hash.length === 64
+        ? d.machine_hash.substring(0, 12) + '...' + d.machine_hash.substring(52)
+        : (d.machine_hash || '—');
+
+    const metaItems = [
+        ['schema_version', d.schema_version || '—'],
+        ['license_id', d.license_id || '—'],
+        ['license_type', d.license_type || '—'],
+        ['signature_alg', d.signature_alg || '—'],
+        ['nonce', d.nonce || '—'],
+        ['issued_at', issuedText],
+        ['expire_at', expireText],
+        ['machine_hash', machineDisplay],
+        ['fingerprint_version', d.fingerprint_version || '—'],
+        ['customer_name', d.customer_name || '—'],
+        ['phone_number', d.phone_number || '—'],
+        ['功能权限', featText],
+    ];
+    document.getElementById('decMetaGrid').innerHTML = metaItems.map(([l, v]) =>
+        `<div style="margin-bottom:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">${l}</div>
+            <div style="font-weight:500;font-size:13px;word-break:break-all">${v}</div>
+        </div>`
+    ).join('');
+    document.getElementById('decPayloadBox').textContent = JSON.stringify(d, null, 2);
+}
+
+// ============ 校验 ============
+async function validateLicense() {
+    const alertBox = document.getElementById('valAlert');
+    const infoBox = document.getElementById('valInfo');
+    alertBox.classList.remove('show');
+    infoBox.classList.remove('show');
+    const key = document.getElementById('validateKey').value.trim();
+    if (!key) { showAlert(alertBox, '请粘贴 license_key'); return; }
+
+    try {
+        // 解码后本地校验
+        const resp = await fetch('/api/license/decode', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({license_key: key})
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) {
+            showAlert(alertBox, data.detail || '校验失败：授权码格式无效');
+            document.getElementById('valResult').style.display = 'none';
+            return;
+        }
+
+        const d = data.data;
+        document.getElementById('valResult').style.display = 'block';
+
+        // 检查签名算法
+        const alg = d.signature_alg || '—';
+        // 检查有效期
+        let statusText = '✅ 有效';
+        let statusClass = 'badge-success';
+        if (d.license_type === 'permanent') {
+            statusText = '✅ 永久有效';
+        } else if (d.expire_at) {
+            const exp = new Date(d.expire_at);
+            const now = new Date();
+            if (exp < now) {
+                statusText = '❌ 已过期';
+                statusClass = 'badge-danger';
+            } else {
+                const daysLeft = Math.ceil((exp - now) / (1000 * 3600 * 24));
+                statusText = `✅ 有效（剩余 ${daysLeft} 天）`;
+            }
+        }
+        // 检查手机号
+        const phoneOk = d.phone_number && d.phone_number.length >= 11;
+        // 检查机器码
+        const machineOk = d.machine_hash && d.machine_hash.length === 64;
+
+        const items = [
+            ['校验结果', `<span class="badge ${statusClass}">${statusText}</span>`],
+            ['签名算法', alg.toUpperCase()],
+            ['授权类型', d.license_type || '—'],
+            ['注册手机号', (d.phone_number || '—') + (phoneOk ? ' ✅' : ' ❌')],
+            ['设备绑定', machineOk ? '✅ 已绑定（64位SHA-256）' : '❌ 未绑定或格式错误'],
+            ['授权编号', d.license_id || '—'],
+            ['Nonce', d.nonce || '—'],
+        ];
+        document.getElementById('valMetaGrid').innerHTML = items.map(([l, v]) =>
+            `<div style="margin-bottom:12px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">${l}</div>
+                <div style="font-size:14px;font-weight:500">${v}</div>
+            </div>`
+        ).join('');
+        infoBox.textContent = '✅ 授权码格式有效。签名算法：' + alg.toUpperCase() + '。请结合实际设备信息（手机号、机器码）综合判断。';
+        infoBox.className = 'alert alert-success show';
+
+    } catch (e) {
+        showAlert(alertBox, '网络错误：' + e.message);
+    }
+}
+
+// ============ 工具 ============
+function showAlert(el, msg) {
+    el.textContent = msg; el.classList.add('show');
+}
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + (type || '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

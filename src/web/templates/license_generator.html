@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火客验证码生成器</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 24px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Microsoft YaHei UI", "Segoe UI", system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #fff;
+            padding: 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+        .header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 600; }
+        .header p { margin: 0; opacity: 0.9; font-size: 13px; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .badge-num {
+            background: var(--primary);
+            color: #fff;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .form-group label .req { color: var(--danger); margin-left: 2px; }
+        .form-group .hint { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        textarea.form-control { font-family: Consolas, "Courier New", monospace; resize: vertical; min-height: 80px; }
+        select.form-control { cursor: pointer; }
+        .features-row { display: flex; gap: 18px; flex-wrap: wrap; }
+        .checkbox-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            user-select: none;
+        }
+        .checkbox-item input { margin: 0; cursor: pointer; }
+        .checkbox-item:hover { border-color: var(--primary); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.05s;
+            font-family: inherit;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: #c7d2fe; cursor: not-allowed; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #059669; }
+        .btn-secondary { background: #e2e8f0; color: var(--text); }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+        .alert {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert.show { display: block; }
+        .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .result-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 320px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .license-key-box {
+            background: #f1f5f9;
+            border: 1px dashed var(--primary);
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 10px;
+            position: relative;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 18px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+        .meta-grid .label { color: var(--text-muted); }
+        .meta-grid .value { font-weight: 500; word-break: break-all; }
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: #fff;
+            padding: 28px;
+            border-radius: 12px;
+            width: 340px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .login-box h2 { margin: 0 0 6px; font-size: 18px; }
+        .login-box p { margin: 0 0 18px; color: var(--text-muted); font-size: 13px; }
+        .spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .tab-bar button {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            margin-bottom: -1px;
+        }
+        .tab-bar button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- 登录遮罩 -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>管理员登录</h2>
+            <p>请输入授权管理后台账户以使用验证码生成器</p>
+            <div class="alert alert-danger" id="loginAlert"></div>
+            <div class="form-group">
+                <label>账户</label>
+                <input type="text" class="form-control" id="loginUser" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" class="form-control" id="loginPass" autocomplete="off">
+            </div>
+            <button class="btn btn-primary" style="width:100%" id="loginBtn" onclick="doLogin()">登录</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainApp" style="display:none">
+        <div class="header">
+            <h1>火客验证码生成器</h1>
+            <p>基于项目 license 签名规则（HMAC-SHA256 / Ed25519），生成与设备绑定的激活码</p>
+        </div>
+
+        <div class="grid">
+            <!-- 左侧：操作面板 -->
+            <div class="card">
+                <div class="tab-bar">
+                    <button class="active" onclick="switchTab('generate', this)">生成验证码</button>
+                    <button onclick="switchTab('decode', this)">解码验证码</button>
+                </div>
+
+                <!-- 生成 Tab -->
+                <div class="tab-content active" id="tab-generate">
+                    <div class="alert alert-danger" id="genAlert"></div>
+                    <div class="form-group">
+                        <label>授权类型 <span class="req">*</span></label>
+                        <select class="form-control" id="licenseType">
+                            <option value="trial_7d">7天免费试用 (trial_7d)</option>
+                            <option value="month_1">1个月 (month_1)</option>
+                            <option value="month_3">3个月 (month_3)</option>
+                            <option value="month_6">6个月 (month_6)</option>
+                            <option value="year_1">1年 (year_1)</option>
+                            <option value="permanent">永久 (permanent)</option>
+                        </select>
+                        <div class="hint" id="durationHint">有效期：7 天</div>
+                    </div>
+                    <div class="form-group">
+                        <label>客户名称</label>
+                        <input type="text" class="form-control" id="customerName" placeholder="可选">
+                    </div>
+                    <div class="form-group">
+                        <label>注册手机号 <span class="req">*</span></label>
+                        <input type="text" class="form-control" id="phoneNumber" placeholder="11 位手机号">
+                        <div class="hint">激活时会校验手机号一致性</div>
+                    </div>
+                    <div class="form-group">
+                        <label>设备请求码 <span class="req">*</span></label>
+                        <textarea class="form-control" id="requestCode" placeholder="粘贴客户端导出的请求码（base64url 字符串）"></textarea>
+                        <div class="hint">或填写下方机器码；两者任填其一，请求码优先</div>
+                    </div>
+                    <div class="form-group">
+                        <label>机器码（machine_hash）</label>
+                        <input type="text" class="form-control" id="machineHash" placeholder="64 位 SHA-256 hex">
+                    </div>
+                    <div class="form-group">
+                        <label>授权编号（可选）</label>
+                        <input type="text" class="form-control" id="licenseId" placeholder="留空自动生成 LIC-YYYYMMDDHHMMSS">
+                    </div>
+                    <div class="form-group">
+                        <label>功能权限</label>
+                        <div class="features-row">
+                            <label class="checkbox-item"><input type="checkbox" id="featCrawler" checked> 启用爬取</label>
+                            <label class="checkbox-item"><input type="checkbox" id="featMonitor" checked> 启用监听</label>
+                            <label class="checkbox-item"><input type="checkbox" id="featAutoReply" checked> 启用自动回复</label>
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" id="genBtn" onclick="generateLicense()">生成验证码</button>
+                        <button class="btn btn-secondary" onclick="clearForm()">清空</button>
+                    </div>
+                </div>
+
+                <!-- 解码 Tab -->
+                <div class="tab-content" id="tab-decode">
+                    <div class="alert alert-danger" id="decAlert"></div>
+                    <div class="form-group">
+                        <label>验证码（license_key）<span class="req">*</span></label>
+                        <textarea class="form-control" id="decodeKey" placeholder="粘贴 license_key（base64url 字符串）" style="min-height:120px"></textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="decodeLicense()">解码</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：结果展示 -->
+            <div class="card">
+                <div class="card-title"><span class="badge-num">✓</span> 生成结果</div>
+                <div class="alert alert-success" id="successAlert"></div>
+                <div id="resultEmpty" style="color:var(--text-muted);text-align:center;padding:40px 0;">
+                    暂无结果，请在左侧填写参数并生成验证码
+                </div>
+                <div id="resultContent" style="display:none">
+                    <div class="meta-grid" id="metaGrid"></div>
+                    <div style="margin-top:14px;">
+                        <div style="font-weight:500;margin-bottom:4px;">验证码（license_key）</div>
+                        <div class="license-key-box" id="licenseKeyBox"></div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-success btn-sm" onclick="copyKey()">复制验证码</button>
+                        <button class="btn btn-secondary btn-sm" onclick="copyAll()">复制完整信息</button>
+                    </div>
+                    <div style="margin-top:14px;">
+                        <div style="font-weight:500;margin-bottom:4px;">签名载荷（signed_payload）</div>
+                        <div class="result-box" id="payloadBox"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 登录 ============
+        async function doLogin() {
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value;
+            const alertBox = document.getElementById('loginAlert');
+            const btn = document.getElementById('loginBtn');
+            if (!u || !p) { alertBox.textContent = '请输入账户和密码'; alertBox.classList.add('show'); return; }
+            btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 登录中...';
+            try {
+                const resp = await fetch('/api/license/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: u, password: p})
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                } else {
+                    alertBox.textContent = data.detail || '登录失败';
+                    alertBox.classList.add('show');
+                }
+            } catch (e) {
+                alertBox.textContent = '网络错误：' + e.message;
+                alertBox.classList.add('show');
+            } finally {
+                btn.disabled = false; btn.textContent = '登录';
+            }
+        }
+        document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+        // ============ Tab 切换 ============
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        // ============ 授权类型提示 ============
+        const DURATION_MAP = {trial_7d:'7 天', month_1:'30 天', month_3:'90 天', month_6:'180 天', year_1:'365 天', permanent:'永久'};
+        document.getElementById('licenseType').addEventListener('change', e => {
+            document.getElementById('durationHint').textContent = '有效期：' + DURATION_MAP[e.target.value];
+        });
+
+        // ============ 生成验证码 ============
+        async function generateLicense() {
+            const alertBox = document.getElementById('genAlert');
+            const successBox = document.getElementById('successAlert');
+            alertBox.classList.remove('show'); successBox.classList.remove('show');
+            const btn = document.getElementById('genBtn');
+            const body = {
+                license_type: document.getElementById('licenseType').value,
+                customer_name: document.getElementById('customerName').value.trim(),
+                phone_number: document.getElementById('phoneNumber').value.trim(),
+                request_code: document.getElementById('requestCode').value.trim(),
+                machine_hash: document.getElementById('machineHash').value.trim(),
+                license_id: document.getElementById('licenseId').value.trim(),
+                features: {
+                    crawler: document.getElementById('featCrawler').checked,
+                    monitor: document.getElementById('featMonitor').checked,
+                    auto_reply: document.getElementById('featAutoReply').checked,
+                }
+            };
+            btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 生成中...';
+            try {
+                const resp = await fetch('/api/license/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) { showResult(data.data); successBox.textContent = '验证码生成成功！'; successBox.classList.add('show'); }
+                else { alertBox.textContent = data.detail || '生成失败'; alertBox.classList.add('show'); }
+            } catch (e) {
+                alertBox.textContent = '网络错误：' + e.message; alertBox.classList.add('show');
+            } finally {
+                btn.disabled = false; btn.textContent = '生成验证码';
+            }
+        }
+
+        // ============ 解码 ============
+        async function decodeLicense() {
+            const alertBox = document.getElementById('decAlert');
+            alertBox.classList.remove('show');
+            const key = document.getElementById('decodeKey').value.trim();
+            if (!key) { alertBox.textContent = '请粘贴 license_key'; alertBox.classList.add('show'); return; }
+            try {
+                const resp = await fetch('/api/license/decode', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({license_key: key})
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    showResult({license_key: key, signed_payload: data.data, license_type: data.data.license_type || '', customer_name: data.data.customer_name || '', phone_number: data.data.phone_number || '', license_id: data.data.license_id || '', machine_hash: data.data.machine_hash || '', features: data.data.features || {}});
+                } else { alertBox.textContent = data.detail || '解码失败'; alertBox.classList.add('show'); }
+            } catch (e) { alertBox.textContent = '网络错误：' + e.message; alertBox.classList.add('show'); }
+        }
+
+        // ============ 结果展示 ============
+        function showResult(d) {
+            document.getElementById('resultEmpty').style.display = 'none';
+            document.getElementById('resultContent').style.display = 'block';
+            const features = d.features || {};
+            const featText = ['crawler', 'monitor', 'auto_reply'].map(k => `${k}:${features[k] ? '开' : '关'}`).join(' / ');
+            const meta = [
+                ['授权类型', d.license_type || '-'],
+                ['客户名称', d.customer_name || '-'],
+                ['手机号', d.phone_number || '-'],
+                ['授权编号', d.license_id || '-'],
+                ['机器码', d.machine_hash ? d.machine_hash.substring(0, 16) + '...' : '-'],
+                ['功能权限', featText],
+            ];
+            document.getElementById('metaGrid').innerHTML = meta.map(([l, v]) => `<div><span class="label">${l}：</span><span class="value">${v}</span></div>`).join('');
+            document.getElementById('licenseKeyBox').textContent = d.license_key || '';
+            document.getElementById('payloadBox').textContent = JSON.stringify(d.signed_payload || {}, null, 2);
+            window._lastResult = d;
+        }
+
+        function copyKey() {
+            const k = document.getElementById('licenseKeyBox').textContent;
+            if (!k) return;
+            navigator.clipboard.writeText(k).then(() => flashSuccess('验证码已复制'));
+        }
+        function copyAll() {
+            if (!window._lastResult) return;
+            navigator.clipboard.writeText(JSON.stringify(window._lastResult, null, 2)).then(() => flashSuccess('完整信息已复制'));
+        }
+        function flashSuccess(msg) {
+            const box = document.getElementById('successAlert');
+            box.textContent = msg; box.classList.add('show');
+            setTimeout(() => box.classList.remove('show'), 1800);
+        }
+        function clearForm() {
+            ['customerName','phoneNumber','requestCode','machineHash','licenseId'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('licenseType').value = 'trial_7d';
+            document.getElementById('durationHint').textContent = '有效期：7 天';
+            document.getElementById('genAlert').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

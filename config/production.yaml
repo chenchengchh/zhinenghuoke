@@ -1,0 +1,95 @@
+# 生产环境配置
+# Production Environment Configuration
+
+app:
+  name: "智能获客系统"
+  version: "1.0.0"
+  env: "production"
+  debug: false
+
+server:
+  host: "127.0.0.1"
+  port: 8023
+  workers: 4
+  timeout: 30
+
+database:
+  provider: "mysql"
+  host: "${DB_HOST:localhost}"
+  port: ${DB_PORT:3306}
+  database: "${DB_NAME:huoke}"
+  username: "${DB_USER:root}"
+  password: "${DB_PASSWORD:}"
+  pool_size: 10
+  max_overflow: 20
+  pool_timeout: 30
+
+cache:
+  enabled: true
+  type: "redis"
+  host: "${REDIS_HOST:localhost}"
+  port: ${REDIS_PORT:6379}
+  db: ${REDIS_DB:0}
+  password: "${REDIS_PASSWORD:}"
+  ttl: 300
+  max_size: 10000
+
+rag:
+  top_k: 5
+  min_confidence: 0.6
+  max_context_length: 10
+  cache_ttl: 300
+  enable_evaluation: true
+  enable_knowledge_graph: true
+  
+  bm25:
+    k1: 1.5
+    b: 0.75
+  
+  reranker:
+    enabled: true
+    model: "cross-encoder"
+    fallback_to_simple: true
+  
+  vector_store:
+    type: "chroma"
+    persist_directory: "data/chroma_db"
+    collection_prefix: "prod_"
+
+knowledge_graph:
+  enabled: true
+  max_hops: 2
+  min_confidence: 0.7
+
+llm:
+  provider: "deepseek"
+  model_name: "deepseek-chat"
+  api_key: "${DEEPSEEK_API_KEY:}"
+  base_url: "${DEEPSEEK_BASE_URL:https://api.deepseek.com/v1}"
+  max_tokens: 2000
+  temperature: 0.7
+  timeout: 60
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.log"
+  max_size: 10485760
+  backup_count: 5
+
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_path: "/health"
+
+rate_limit:
+  enabled: true
+  requests_per_minute: 60
+  requests_per_hour: 1000
+
+security:
+  cors_origins:
+    - "https://your-domain.com"
+  api_key_header: "X-API-Key"
+  secret_key: "${JWT_SECRET:}"
+  jwt_expire_hours: 24

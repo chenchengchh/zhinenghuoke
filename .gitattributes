@@ -1,0 +1,3 @@
+*.safetensors binary
+*.onnx binary
+*.bin binary

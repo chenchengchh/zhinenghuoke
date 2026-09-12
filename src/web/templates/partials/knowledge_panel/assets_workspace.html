@@ -1,0 +1,91 @@
+                <!-- 知识资产工作区 -->
+                <div class="col-12" data-knowledge-workspace="assets">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="card workspace-surface assets-list-card">
+                                <div class="card-header assets-list-card__header d-flex justify-content-between align-items-center py-2 flex-wrap gap-2">
+                                    <div>
+                                        <span class="fw-bold">📚 知识资产列表</span>
+                                        <small class="text-muted d-block">集中查看、筛选、编辑和删除知识条目。</small>
+                                    </div>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-primary btn-sm" onclick="showAddKnowledgeModal()">+ 添加知识</button>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="loadKnowledge()">刷新列表</button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="assets-toolbar mb-3">
+                                        <div class="assets-toolbar__title">
+                                            <div class="fw-bold">搜索知识</div>
+                                            <div class="small text-muted">按问题关键词快速定位目标知识，并从列表直接进入维护动作。</div>
+                                        </div>
+                                        <div class="assets-toolbar__meta">
+                                            <div class="small text-muted">当前共 <span class="fw-bold" id="knowledge-count">0</span> 条</div>
+                                        </div>
+                                    </div>
+                                    <div class="assets-search-panel border rounded bg-light p-3 mb-3">
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-lg-8">
+                                                <label class="form-label small mb-1">问题关键词</label>
+                                                <input type="text" class="form-control form-control-sm" id="search-knowledge" placeholder="搜索问题关键词..." onkeyup="if(event.key==='Enter')loadKnowledge()">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="d-grid d-lg-flex gap-2 justify-content-lg-end">
+                                                    <button class="btn btn-primary btn-sm" type="button" onclick="loadKnowledge()">搜索</button>
+                                                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="document.getElementById('search-knowledge').value=''; loadKnowledge()">清空</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive table-scroll assets-table-wrap">
+                                        <table class="table table-sm table-hover mb-0 align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="th-checkbox"><input type="checkbox" id="knowledge-select-all" onchange="toggleKnowledgeSelectAll()" aria-label="全选知识"></th>
+                                                    <th>问题</th>
+                                                    <th class="th-category">分类</th>
+                                                    <th>模板</th>
+                                                    <th class="th-usage">使用</th>
+                                                    <th class="th-category">操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="knowledge-list"></tbody>
+                                        </table>
+                                    </div>
+                                    <div class="assets-footer d-flex justify-content-between align-items-center mt-2 pt-2 border-top flex-wrap gap-2">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <button class="btn btn-outline-danger btn-sm" id="knowledge-batch-delete-btn" onclick="batchKnowledgeAction('delete')" disabled>批量删除</button>
+                                            <span class="small text-muted">已选择 <span class="fw-bold" id="knowledge-selected-count">0</span> 条</span>
+                                        </div>
+                                        <div class="small text-muted">删除后会同步清理知识记录与向量数据。</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top flex-wrap gap-2" id="knowledge-pagination-container">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <select class="form-select form-select-sm width-80" id="knowledge-page-size" onchange="changeKnowledgePageSize()" aria-label="每页显示条数">
+                                                <option value="20">20条/页</option>
+                                                <option value="50" selected>50条/页</option>
+                                                <option value="100">100条/页</option>
+                                                <option value="200">200条/页</option>
+                                                <option value="500">500条/页</option>
+                                            </select>
+                                            <small class="text-muted" id="knowledge-pagination-info">第 1 页 / 共 1 页</small>
+                                        </div>
+                                        <nav aria-label="知识库分页">
+                                            <ul class="pagination pagination-sm mb-0" id="knowledge-pagination">
+                                                <li class="page-item" id="knowledge-prev-page">
+                                                    <a class="page-link" href="#" onclick="changeKnowledgePage('prev')">«</a>
+                                                </li>
+                                                <li class="page-item active" id="knowledge-page-1">
+                                                    <a class="page-link" href="#" onclick="goToKnowledgePage(1)">1</a>
+                                                </li>
+                                                <li class="page-item" id="knowledge-next-page">
+                                                    <a class="page-link" href="#" onclick="changeKnowledgePage('next')">»</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

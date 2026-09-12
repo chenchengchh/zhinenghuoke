@@ -1,0 +1,261 @@
+                        <div class="col-lg-8">
+                            <div class="card h-100 workspace-surface workspace-editor-card">
+                                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">🛠️ 模板设置</div>
+                                        <small class="text-muted">上半区先看模板摘要与校验结果，下半区再进入字段和问题类型编辑。</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" onclick="KnowledgeApp.validateIndustrySchema()">校验</button>
+                                        <button class="btn btn-outline-success" onclick="KnowledgeApp.setActiveIndustrySchema()">设为启用</button>
+                                        <button class="btn btn-outline-danger" onclick="KnowledgeApp.deleteIndustrySchema()">删除模板</button>
+                                        <button class="btn btn-primary" onclick="KnowledgeApp.saveIndustrySchema()">保存</button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <div class="border rounded p-2 mb-2 bg-light">
+                                        <div class="fw-bold small mb-2">快速开始</div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.createIndustrySchemaFromPreset('generic')">通用销售模板</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.createIndustrySchemaFromPreset('tourism')">旅游线路模板</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.createIndustrySchemaFromPreset('education')">教育课程模板</button>
+                                        </div>
+                                        <div class="small text-muted mt-2">如果你只是想快速开一个行业模板，先点上面的预设，再按实际业务改字段和问题类型即可。</div>
+                                    </div>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-5">
+                                            <label class="form-label small mb-1">系统编号</label>
+                                            <div id="industry-schema-id-preview" class="form-control form-control-sm bg-light d-flex align-items-center">系统会自动生成</div>
+                                            <input type="hidden" id="industry-schema-id">
+                                            <div class="form-text mt-1">默认会按“行业.业务对象”自动生成，普通情况下不用手动改。</div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label class="form-label small mb-1">当前检查结果</label>
+                                            <div id="industry-schema-validation" class="form-control form-control-sm bg-light d-flex align-items-center">等待加载</div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info py-2 small mb-2" id="industry-schema-readable-summary">
+                                        这里会用通俗的话告诉你：这个模板适合什么行业、会管理哪些信息、用户常问什么。
+                                    </div>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-3">
+                                            <div class="border rounded p-2 bg-light h-100">
+                                                <div class="small text-muted">适用行业</div>
+                                                <div class="fw-bold" id="industry-schema-summary-industry">-</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="border rounded p-2 bg-light h-100">
+                                                <div class="small text-muted">核心对象</div>
+                                                <div class="fw-bold" id="industry-schema-summary-entity">-</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="border rounded p-2 bg-light h-100">
+                                                <div class="small text-muted">字段数量</div>
+                                                <div class="fw-bold" id="industry-schema-summary-fields">0</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="border rounded p-2 bg-light h-100">
+                                                <div class="small text-muted">问题分类</div>
+                                                <div class="fw-bold" id="industry-schema-summary-intents">0</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-2 h-100">
+                                                <div class="fw-bold mb-1 small">用户最常问什么</div>
+                                                <div id="industry-schema-intent-summary" class="small text-muted">等待加载</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-2 h-100">
+                                                <div class="fw-bold mb-1 small">模板里会管理什么信息</div>
+                                                <div id="industry-schema-field-summary" class="small text-muted">等待加载</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border rounded p-2 mb-2 bg-light">
+                                        <div class="fw-bold mb-1 small">系统回答时会怎么用这个模板</div>
+                                        <div id="industry-schema-grounded-summary" class="small text-muted">等待加载</div>
+                                    </div>
+                                    <div class="border rounded p-2 mb-2">
+                                        <div class="fw-bold small mb-2">基础设置</div>
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <label class="form-label small mb-1">默认启用模板</label>
+                                                <input type="text" class="form-control form-control-sm" id="industry-schema-setting-active" list="industry-schema-id-options" placeholder="例如：generic.service_sales">
+                                                <datalist id="industry-schema-id-options"></datalist>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small mb-1">没有匹配企业时</label>
+                                                <select class="form-select form-select-sm" id="industry-schema-setting-resolution-mode">
+                                                    <option value="fail_closed">先不自动匹配，避免串模板</option>
+                                                    <option value="fallback_generic">自动回到通用模板</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small mb-1">通用兜底模板</label>
+                                                <input type="text" class="form-control form-control-sm" id="industry-schema-setting-fallback" list="industry-schema-id-options" placeholder="例如：generic.service_sales">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small mb-1">企业是否必须单独绑定</label>
+                                                <div class="form-check form-switch pt-2">
+                                                    <input class="form-check-input" type="checkbox" id="industry-schema-setting-require-binding">
+                                                    <label class="form-check-label small" for="industry-schema-setting-require-binding">开启严格绑定</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <label class="form-label small mb-0">企业和模板对应关系</label>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.addIndustrySchemaBindingRow()">+ 添加绑定</button>
+                                                </div>
+                                                <div id="industry-schema-setting-bindings-editor" class="d-flex flex-column gap-2"></div>
+                                                <textarea class="form-control form-control-sm font-monospace hidden" id="industry-schema-setting-bindings" rows="4" placeholder='{
+  "enterprise-a": "generic.service_sales"
+}'></textarea>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small mb-1">是否允许临时指定模板</label>
+                                                <div class="form-check form-switch pt-2 mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="industry-schema-setting-allow-override">
+                                                    <label class="form-check-label small" for="industry-schema-setting-allow-override">允许临时指定模板</label>
+                                                </div>
+                                                <div class="small text-muted">普通场景保持关闭即可；只有需要临时切模板时再打开。</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <details class="border rounded p-2 mb-2">
+                                        <summary class="fw-bold small" style="cursor:pointer;">高级设置（一般不用改）</summary>
+                                        <div class="small text-muted mt-2 mb-2">这里是排查和高级维护用的功能，普通运营日常配置可以忽略。</div>
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="fw-bold small mb-2">高级编号设置</div>
+                                            <div class="row g-2">
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-switch pt-2">
+                                                        <input class="form-check-input" type="checkbox" id="industry-schema-id-manual">
+                                                        <label class="form-check-label small" for="industry-schema-id-manual">手动指定系统编号</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label small mb-1">手动编号</label>
+                                                    <input type="text" class="form-control form-control-sm" id="industry-schema-id-manual-input" placeholder="例如：education.course_sales.custom" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="border rounded p-2 mb-2 bg-light">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="fw-bold small">按企业预览最终生效模板</div>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="KnowledgeApp.previewIndustrySchemaResolution()">预览</button>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-md-4">
+                                                    <label class="form-label small mb-1">企业 ID</label>
+                                                    <input type="text" class="form-control form-control-sm" id="industry-schema-preview-enterprise" list="industry-schema-enterprise-options" placeholder="例如：enterprise-a">
+                                                    <datalist id="industry-schema-enterprise-options"></datalist>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small mb-1">临时指定模板</label>
+                                                    <input type="text" class="form-control form-control-sm" id="industry-schema-preview-preferred" list="industry-schema-id-options" placeholder="可选">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small mb-1">临时处理规则</label>
+                                                    <select class="form-select form-select-sm" id="industry-schema-preview-mode">
+                                                        <option value="">使用当前设置</option>
+                                                        <option value="fail_closed">严格绑定</option>
+                                                        <option value="fallback_generic">回到通用模板</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 small text-muted" id="industry-schema-preview-result">
+                                                这里会显示该企业最终会使用哪个模板，以及为什么会命中它。
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Schema 编辑模式">
+                                                <button class="btn btn-primary" id="industry-schema-mode-form" onclick="KnowledgeApp.switchIndustrySchemaEditorMode('form')">基础编辑</button>
+                                                <button class="btn btn-outline-primary" id="industry-schema-mode-json" onclick="KnowledgeApp.switchIndustrySchemaEditorMode('json')">高级 JSON</button>
+                                            </div>
+                                            <div class="small text-muted">JSON 主要给研发或排查时使用。</div>
+                                        </div>
+                                    </details>
+                                    <div id="industry-schema-form-editor">
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="fw-bold small mb-2">第 1 步：先说明这个模板服务什么业务</div>
+                                            <div class="small text-muted mb-2">先填行业、主要销售对象和模板名称，系统会据此自动生成模板编号，并给出后面的推荐项。</div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-md-4">
+                                                <label class="form-label small mb-1">模板名称</label>
+                                                <input type="text" class="form-control form-control-sm" id="industry-schema-display-name" placeholder="例如：旅游线路销售">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small mb-1">你要服务的行业</label>
+                                                <input type="text" class="form-control form-control-sm" id="industry-schema-industry-code" list="industry-schema-industry-code-options" placeholder="如：generic / tourism / education">
+                                                <datalist id="industry-schema-industry-code-options"></datalist>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small mb-1">主要销售对象</label>
+                                                <input type="text" class="form-control form-control-sm" id="industry-schema-entity-type" list="industry-schema-entity-type-options" placeholder="如：product / service / route">
+                                                <datalist id="industry-schema-entity-type-options"></datalist>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-1">一句话说明这个模板是做什么的</label>
+                                            <textarea class="form-control form-control-sm" id="industry-schema-description" rows="2" placeholder="例如：用于课程咨询、报名、学费说明和试听安排"></textarea>
+                                        </div>
+                                        </div>
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="fw-bold small mb-2">第 2 步：告诉系统这个行业最重要的信息</div>
+                                            <div class="small text-muted mb-2">你可以直接点推荐项，快速补齐常用字段；不够再手动添加。</div>
+                                            <div id="industry-schema-field-presets" class="d-flex flex-wrap gap-2 mb-2"></div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="fw-bold small">这个行业最重要的信息项</div>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.addIndustrySchemaField()">+ 添加字段</button>
+                                            </div>
+                                            <div id="industry-schema-fields-editor" class="d-flex flex-column gap-2"></div>
+                                        </div>
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="fw-bold small mb-2">第 3 步：告诉系统用户最常问什么</div>
+                                            <div class="small text-muted mb-2">先点常见问题推荐，再补你业务里的特殊问法。</div>
+                                            <div id="industry-schema-intent-presets" class="row g-2 mb-2"></div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="fw-bold small">用户最常问的问题类型</div>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="KnowledgeApp.addIndustrySchemaIntent()">+ 添加分类</button>
+                                            </div>
+                                            <div id="industry-schema-intents-editor" class="d-flex flex-column gap-2"></div>
+                                        </div>
+                                        <div class="border rounded p-2 mb-2">
+                                            <div class="fw-bold small mb-2">第 4 步：决定回答怎么组织</div>
+                                            <div class="small text-muted mb-2">根据你的业务，选择系统回答时更适合用哪种组织方式。普通情况下点一个最接近的就可以。</div>
+                                            <div id="industry-schema-bundle-type-cards" class="row g-2 mb-2"></div>
+                                            <div class="row g-2">
+                                                <div class="col-md-4 hidden">
+                                                    <label class="form-label small mb-1">回答按什么来整理</label>
+                                                    <select class="form-select form-select-sm" id="industry-schema-bundle-type">
+                                                        <option value="entity">按对象整理</option>
+                                                        <option value="route">按线路整理</option>
+                                                        <option value="service">按服务整理</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small mb-1">做推荐对比时重点看什么</label>
+                                                    <input type="text" class="form-control form-control-sm" id="industry-schema-comparison-fields" placeholder="如：price, inclusions, audience">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small mb-1">用户继续追问时补什么</label>
+                                                    <input type="text" class="form-control form-control-sm" id="industry-schema-followup-fields" placeholder="如：price, schedule, pickup">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="industry-schema-json-preview-panel" class="hidden">
+                                        <div class="small text-muted mb-2">这里展示根据表单实时生成的底层配置，便于研发或高级运营核对。</div>
+                                        <textarea class="form-control font-monospace mt-2" id="industry-schema-json" rows="18" readonly placeholder='{
+  "schema_id": "new.industry_schema"
+}'></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>

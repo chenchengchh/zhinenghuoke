@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智揽人工智能模型</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/custom.css?v=20260514a" rel="stylesheet">
+    <link href="/static/css/knowledge-styles.css?v=20260529a" rel="stylesheet">
+    <link href="/static/css/layout.css?v=20260430" rel="stylesheet">
+    <link href="/static/css/dark-mode.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/flatpickr/flatpickr.min.css">
+    <script src="/static/flatpickr/flatpickr.min.js"></script>
+    <script src="/static/flatpickr/zh.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- 左侧导航侧边栏 -->
+        <aside class="app-sider" id="app-sider">
+            <div class="sider-logo">
+                <div class="logo-icon-wrapper">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <span class="logo-text">智揽人工智能模型</span>
+                <span class="ai-core-dot"></span>
+                <div class="logo-bottom-line"></div>
+            </div>
+            <ul class="sider-menu" id="main-menu">
+                <li class="sider-menu-item">
+                    <button class="sider-menu-link active" data-target="crawl-panel" onclick="switchPanel('crawl-panel')">
+                        <i class="bi bi-search"></i>
+                        <span>任务发布</span>
+                    </button>
+                </li>
+                <li class="sider-menu-item">
+                    <button class="sider-menu-link" data-target="customer-panel" onclick="switchPanel('customer-panel')">
+                        <i class="bi bi-people"></i>
+                        <span>客户管理</span>
+                    </button>
+                </li>
+                <li class="sider-menu-item">
+                    <button class="sider-menu-link" data-target="analytics-panel" onclick="switchPanel('analytics-panel')">
+                        <i class="bi bi-bar-chart"></i>
+                        <span>成果展示</span>
+                    </button>
+                </li>
+                <li class="sider-menu-item">
+                    <button class="sider-menu-link" data-target="knowledge-panel" onclick="switchPanel('knowledge-panel')">
+                        <i class="bi bi-journal-bookmark"></i>
+                        <span>模型训练</span>
+                    </button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 右侧主内容包裹区 -->
+        <div class="app-wrapper">
+            <!-- 顶部工具栏 -->
+            <header class="app-header">
+                <div class="header-left">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb" id="header-breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">首页</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">任务发布</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <span id="license-status" class="badge bg-warning text-dark status-badge">授权检测中...</span>
+                    <span id="remote-control-status" class="badge bg-secondary status-badge d-none">远控未连接</span>
+                    <button class="btn btn-sm btn-outline-success" onclick="showLicenseModal()" title="激活或清除授权">授权管理</button>
+                    <button class="btn btn-sm btn-outline-info" onclick="showDingTalkConfigModal()" title="配置钉钉提醒">钉钉设置</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="startBrowser()" title="启动抖音浏览器">🚀 启动抖音</button>
+                    <button class="btn btn-sm btn-outline-secondary d-none" onclick="refreshRemoteControlStatus(true)" title="刷新远控策略">远控刷新</button>
+                </div>
+            </header>
+
+            <!-- 核心内容面板区 -->
+            <main class="app-main">
+                <div class="tab-content" id="myTabContent">
+            <!-- 爬取任务 -->
+            <div class="tab-pane fade show active" id="crawl-panel" role="tabpanel">
+                <!-- 进度条区域 -->
+                <div id="progress-container" class="mb-4 d-none">
+                    <div class="progress progress-lg">
+                        <div id="task-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" title="任务进度">0%</div>
+                    </div>
+                    <small id="progress-detail" class="text-muted mt-1 d-block text-center">准备就绪...</small>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>📡 自动回复状态</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="btn-start-monitor" class="btn btn-success btn-sm" onclick="startMonitor()">▶ 启动回复</button>
+                            <button id="btn-stop-monitor" class="btn btn-danger btn-sm d-none" onclick="stopMonitor()">■ 停止回复</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <!-- 搜索任务卡片 -->
+                    <div class="col-xl-8">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">🔍 视频获取</div>
+                            <div class="card-body">
+                                <form id="search-form">
+                                    <div class="row g-3">
+                                        <div class="col-lg-3 col-md-6">
+                                            <label class="form-label">平台选择</label>
+                                            <select class="form-select" id="platform" aria-label="平台选择">
+                                                <option value="douyin" selected>抖音</option>
+                                                <option value="xiaohongshu">小红书</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6">
+                                            <label class="form-label">获客数量</label>
+                                            <input type="number" class="form-control" id="lead_quota" value="1000" aria-label="获客数量">
+                                            <small class="text-muted">本轮最多获取用户数量</small>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            <label class="form-label" for="comment_time_range">设置时间范围</label>
+                                            <input type="text" class="form-control" id="comment_time_range" placeholder="选择时间范围" aria-label="设置时间范围">
+                                            <small class="text-muted">不选表示不限制时间。</small>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">搜索关键词</label>
+                                            <input type="text" class="form-control" id="keyword" placeholder="例如：美妆、创业" required>
+                                            <small class="text-muted">输入要搜索的视频关键词。</small>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">评论内容关键词（可选）</label>
+                                            <input type="text" class="form-control" id="comment_keywords" placeholder="例如：多少钱、怎么买、价格">
+                                            <small class="text-muted">多个关键词用逗号分隔，不填则不过滤评论内容。</small>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-check form-switch border rounded crawl-option-switch">
+                                                <input class="form-check-input crawl-option-switch__input" type="checkbox" id="enable_search_reply">
+                                                <div class="crawl-option-switch__body">
+                                                    <label class="form-check-label crawl-option-switch__label" for="enable_search_reply">评论下回复</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 d-none" id="search-reply-config">
+                                            <div class="border rounded p-3 bg-light-subtle">
+                                                <div class="row g-3 mb-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-semibold" for="reply_quota">回复数量</label>
+                                                        <input type="number" min="1" class="form-control" id="reply_quota" value="10">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <label class="form-label fw-bold mb-0">原评论回复模板 (每次随机选择一条)</label>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSearchReplyInput()">+ 添加回复</button>
+                                                </div>
+                                                <div id="search-reply-inputs-container" class="d-flex flex-column gap-2">
+                                                    <!-- 动态生成的回复输入框将由 JS 初始化 -->
+                                                </div>
+                                                <div class="form-text">开启后，系统会对本轮抓取到并命中的原评论，直接在该楼层下发送这里配置的回复内容。</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check form-switch border rounded h-100 crawl-option-switch">
+                                                <input class="form-check-input crawl-option-switch__input" type="checkbox" id="skip_existing_videos" checked>
+                                                <div class="crawl-option-switch__body">
+                                                    <label class="form-check-label crawl-option-switch__label" for="skip_existing_videos">跳过已获取视频</label>
+                                                    <div class="form-text crawl-option-switch__hint">默认开启，避免重复处理同一视频。</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check form-switch border rounded h-100 crawl-option-switch">
+                                                <input class="form-check-input crawl-option-switch__input" type="checkbox" id="skip_crawled" checked>
+                                                <div class="crawl-option-switch__body">
+                                                    <label class="form-check-label crawl-option-switch__label" for="skip_crawled">跳过已获取评论</label>
+                                                    <div class="form-text crawl-option-switch__hint">默认开启，避免重复扫描同一批评论。</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="btn-search-start" class="btn btn-primary flex-grow-1" onclick="startSearchTask()">开始运行</button>
+                                        <button type="button" id="btn-search-stop" class="btn btn-danger flex-grow-1 d-none" onclick="stopTask()">停止运行</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 私信任务卡片 -->
+                    <div class="col-xl-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">✉️ 自动私信</div>
+                            <div class="card-body">
+                                <form id="send-form">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label mb-0">私信内容 (发送时随机轮流)</label>
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="addMessageInput()">+ 添加</button>
+                                        </div>
+                                        <div id="message-inputs-container" class="d-flex flex-column gap-2">
+                                            <!-- 动态生成的输入框将由 JS 初始化 -->
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">发送数量</label>
+                                        <input type="number" class="form-control" id="send_count" value="10" aria-label="发送数量">
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" id="btn-send-start" class="btn btn-success flex-grow-1">开始发送</button>
+                                        <button type="button" id="btn-send-stop" class="btn btn-danger flex-grow-1 d-none" onclick="stopTask()">停止发送</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 客户管理 -->
+            <div class="tab-pane fade" id="customer-panel" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>👥 客户列表</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input type="text" class="form-control form-control-sm width-120" id="customer-search" placeholder="搜索昵称/评论" aria-label="搜索客户">
+                            <input
+                                type="text"
+                                class="form-control form-control-sm width-120"
+                                id="filter-comment-time"
+                                placeholder="全部评论时间"
+                                aria-label="设置时间范围"
+                            >
+                            <select class="form-select form-select-sm width-120" id="filter-platform" aria-label="平台筛选">
+                                <option value="">全部平台</option>
+                                <option value="douyin">抖音</option>
+                                <option value="xiaohongshu">小红书</option>
+                            </select>
+                            <select class="form-select form-select-sm width-120" id="filter-status" aria-label="私信状态筛选">
+                                <option value="">全部私信状态</option>
+                                <option value="pending">待发送私信</option>
+                                <option value="sent">已发送私信</option>
+                                <option value="replied">客户已回复</option>
+                            </select>
+                            <select class="form-select form-select-sm width-120" id="filter-interact-status" aria-label="互动状态筛选">
+                                <option value="">全部互动状态</option>
+                                <option value="pending">未互动</option>
+                                <option value="interacted">已互动</option>
+                                <option value="failed">互动失败</option>
+                            </select>
+                            <select class="form-select form-select-sm width-120" id="customer-page-size" aria-label="每页数量">
+                                <option value="20" selected>20/页</option>
+                                <option value="50">50/页</option>
+                                <option value="100">100/页</option>
+                                <option value="200">200/页</option>
+                                <option value="500">500/页</option>
+                            </select>
+                            <div class="form-check form-check-inline d-flex align-items-center mb-0">
+                                <input class="form-check-input" type="checkbox" id="filter-current-task-only">
+                                <label class="form-check-label small text-nowrap" for="filter-current-task-only">仅看本次新增</label>
+                            </div>
+                            <span id="customer-selected-summary" class="small text-primary d-flex align-items-center">已选 0 项</span>
+                            <button class="btn btn-sm btn-primary" type="button" id="customer-interact-btn" onclick="openInteractModal()" disabled>一键互动</button>
+                            <button class="btn btn-sm btn-outline-danger" type="button" id="customer-clear-selection-btn" onclick="clearCustomerSelection()" disabled>删除选中</button>
+                            <button class="btn btn-sm btn-success" type="button" id="customer-export-selected-btn" onclick="exportSelectedCustomersExcel()" disabled>导出选中</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadCustomers(1)">刷新</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="customer-filter-hint" class="small text-muted mb-2">
+                            可按评论时间筛选，或仅查看最近一次获取任务新增的客户。
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="customer-select-all" aria-label="全选当前页" onchange="toggleSelectAllCustomers(this.checked)">
+                                        </th>
+                                        <th>平台</th>
+                                        <th>昵称</th>
+                                        <th>意向等级</th>
+                                        <th>评论内容</th>
+                                        <th>视频信息</th>
+                                        <th>状态</th>
+                                        <th>评论时间</th>
+                                        <th>采集时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customer-list"></tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small id="customer-page-summary" class="text-muted">加载中...</small>
+                            <div class="d-flex align-items-center gap-2">
+                                <button id="customer-prev-page" class="btn btn-sm btn-outline-secondary" type="button">上一页</button>
+                                <span id="customer-page-indicator" class="small text-muted">1 / 1</span>
+                                <button id="customer-next-page" class="btn btn-sm btn-outline-secondary" type="button">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据分析 -->
+            <div class="tab-pane fade" id="analytics-panel" role="tabpanel">
+                <div class="row">
+                    <!-- 高意向客户 -->
+                    <div class="col-xl-7 col-lg-7">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span>⭐ 高意向客户</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-success" type="button" onclick="exportHighIntentCustomersExcel()">导出 Excel</button>
+                                    <button class="btn btn-outline-primary" onclick="refreshHighIntentCustomers()">刷新列表</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-lg-4 col-md-6">
+                                        <select class="form-select form-select-sm" id="filter-min-score" onchange="refreshHighIntentCustomers()" aria-label="最低分数筛选">
+                                            <option value="30">评分 ≥ 30</option>
+                                            <option value="50" selected>评分 ≥ 50</option>
+                                            <option value="70">评分 ≥ 70</option>
+                                            <option value="80">评分 ≥ 80</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="table-responsive max-height-350">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>客户</th>
+                                                <th>进度</th>
+                                                <th>购买概率</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="high-intent-list">
+                                            <tr><td colspan="4" class="text-center text-muted">加载中...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 待办事项 -->
+                    <div class="col-xl-5 col-lg-5">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span>📋 待跟进</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-outline-success" type="button" onclick="exportFollowUpCustomersExcel()">导出 Excel</button>
+                                    <span class="badge bg-danger" id="action-count">0</span>
+                                </div>
+                            </div>
+                            <div class="card-body card-scroll-sm">
+                                <div id="action-items-list">
+                                    <div class="text-center text-muted">加载中...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        <!-- 知识库管理 -->
+        <div class="tab-pane fade" id="knowledge-panel" role="tabpanel">
+            <div class="row">
+{% include 'partials/knowledge_panel/header.html' %}
+{% include 'partials/knowledge_panel/assets_stats.html' %}
+{% include 'partials/knowledge_panel/assets_workspace.html' %}
+{% include 'partials/knowledge_panel/structuring_workspace.html' %}
+{% include 'partials/knowledge_panel/schema_workspace.html' %}
+            </div>
+        </div>
+    <!-- 添加/编辑知识模态框 -->
+    <div class="modal fade" id="knowledgeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="knowledgeModalTitle">添加知识</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="knowledge-form">
+                        <input type="hidden" id="knowledge-id">
+                        <div class="mb-3">
+                            <label class="form-label">所属企业</label>
+                            <select class="form-select" id="knowledge-enterprise" aria-label="所属企业">
+                                <option value="">默认企业</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">标准问题 *</label>
+                            <input type="text" class="form-control" id="knowledge-question" required aria-label="标准问题">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">标准答案 *</label>
+                            <textarea class="form-control" id="knowledge-answer" rows="3" required aria-label="标准答案"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">分类</label>
+                                <select class="form-select" id="knowledge-category" aria-label="知识分类">
+                                    <option value="generic">📌 通用知识</option>
+                                    <option value="product">📦 产品介绍</option>
+                                    <option value="service">💬 服务沟通</option>
+                                    <option value="solution">🧩 解决方案</option>
+                                    <option value="policy">📋 规则政策</option>
+                                    <option value="process">🪜 流程说明</option>
+                                    <option value="company">🏢 公司介绍</option>
+                                    <option value="faq">❓ 常见问题</option>
+                                    <option value="price">💰 价格费用</option>
+                                    <option value="tips">📝 注意事项</option>
+                                    <option value="course">🎓 课程介绍</option>
+                                    <option value="other">📁 其他</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">领域</label>
+                                <select class="form-select" id="knowledge-domain" aria-label="知识领域">
+                                    <option value="generic">🌐 通用</option>
+                                    <option value="product">📦 产品</option>
+                                    <option value="service">💼 服务</option>
+                                    <option value="solution">🧩 方案</option>
+                                    <option value="policy">📘 政策</option>
+                                    <option value="company">🏢 公司</option>
+                                    <option value="process">🪜 流程</option>
+                                    <option value="package">📦 套餐</option>
+                                    <option value="course">🎓 课程</option>
+                                    <option value="route">🛣️ 路线/线路</option>
+                                    <option value="price">💰 价格费用</option>
+                                    <option value="tips">📝 说明/提醒</option>
+                                    <option value="other">📁 其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">主题</label>
+                                <input type="text" class="form-control" id="knowledge-topic" placeholder="例如：留资、报价、线路对比" aria-label="知识主题">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">优先级</label>
+                                <input type="number" class="form-control" id="knowledge-priority" value="0" aria-label="优先级">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">触发关键词 (逗号分隔)</label>
+                            <input type="text" class="form-control" id="knowledge-keywords" placeholder="例如: 价格,多少钱,费用" aria-label="触发关键词">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">问题别名/同义词 (逗号分隔)</label>
+                            <input type="text" class="form-control" id="knowledge-aliases" placeholder="例如: 怎么收费,贵不贵" aria-label="相似问题">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">多样化回复模板 (每行一个)</label>
+                            <textarea class="form-control" id="knowledge-templates" rows="4" placeholder="每行一个回复模板，系统会随机选择" aria-label="回复模板"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">元数据 JSON</label>
+                            <textarea class="form-control font-monospace" id="knowledge-metadata" rows="5" placeholder='{"schema_id":"generic.service_sales"}' aria-label="元数据 JSON"></textarea>
+                            <div class="form-text">可填写 `schema_id`、`entity_type`、`route_name` 等结构化信息。</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveKnowledge()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 待审核知识模态框 -->
+    <div class="modal fade" id="pendingValidationModal" tabindex="-1" aria-labelledby="pendingValidationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="pendingValidationModalLabel">待审核知识</h5>
+                        <div class="small text-muted">建议答案可直接修改，确认通过后会自动进入正式知识库。</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="small text-muted">当前待审核数量：<span class="fw-bold text-warning" id="stat-pending-validation-btn">0</span></div>
+                        <button class="btn btn-sm btn-outline-primary" type="button" onclick="loadPendingValidation()">刷新待审核</button>
+                    </div>
+                    <div id="pending-validation-section" class="border rounded">
+                        <div class="table-responsive max-height-300">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="th-question">问题</th>
+                                        <th class="th-answer">建议答案</th>
+                                        <th class="th-size">分类</th>
+                                        <th class="th-confidence">置信度</th>
+                                        <th class="th-action-sm">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-validation-list">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-3">正在加载待审核知识...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已学习内容模态框 -->
+    <div class="modal fade" id="learnedHistoryModal" tabindex="-1" aria-labelledby="learnedHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="learnedHistoryModalLabel">已学习内容</h5>
+                        <div class="small text-muted">展示最近已通过审核并沉淀下来的学习成果。</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="small text-muted">当前展示数量：<span class="fw-bold text-secondary" id="learned-history-count">0</span></div>
+                        <button class="btn btn-sm btn-outline-primary" type="button" onclick="loadLearnedHistory()">刷新已学习</button>
+                    </div>
+                    <div id="learned-history-section" class="border rounded">
+                        <div class="table-responsive max-height-300">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="th-question">问题</th>
+                                        <th class="th-answer">学习内容</th>
+                                        <th class="th-size">分类</th>
+                                        <th class="th-confidence">状态</th>
+                                        <th class="th-time">时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="learned-history-list">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-3">正在加载已学习内容...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件预览模态框 -->
+    <div class="modal fade" id="filePreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">📄 文件预览</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="file-preview-content">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 企业管理模态框 -->
+    <div class="modal fade" id="enterpriseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enterpriseModalTitle">企业管理</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="enterprise-form">
+                        <input type="hidden" id="enterprise-id">
+                        <div class="mb-3">
+                            <label class="form-label">企业名称 *</label>
+                            <input type="text" class="form-control" id="enterprise-name" required aria-label="企业名称">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">企业代码 *</label>
+                            <input type="text" class="form-control" id="enterprise-code" placeholder="例如: company_a" required aria-label="企业代码">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">联系人</label>
+                            <input type="text" class="form-control" id="enterprise-contact" aria-label="联系人">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">联系电话</label>
+                            <input type="text" class="form-control" id="enterprise-phone" aria-label="联系电话">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">配置</label>
+                            <textarea class="form-control" id="enterprise-config" rows="3" placeholder="JSON格式的配置" aria-label="企业配置"></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="enterprise-enabled" checked aria-label="启用">
+                            <label class="form-check-label" for="enterprise-enabled">启用</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEnterprise()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 知识图谱模态框 -->
+    <div class="modal fade" id="graphModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🕸️ 知识图谱</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="graph-search" placeholder="搜索实体..." onkeyup="if(event.keyCode===13)refreshGraph()" aria-label="搜索实体">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="graph-domain-filter" onchange="refreshGraph()" aria-label="领域筛选">
+                                <option value="">全部领域</option>
+                                <option value="attractions">🏛️ 场景介绍</option>
+                                <option value="food">🍜 美食推荐</option>
+                                <option value="transport">🚇 交通出行</option>
+                                <option value="accommodation">🏨 住宿推荐</option>
+                                <option value="itinerary">📅 行程规划</option>
+                                <option value="price">💰 价格费用</option>
+                                <option value="tips">📝 知识说明</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="graph-type-filter" onchange="refreshGraph()" aria-label="类型筛选">
+                                <option value="">全部类型</option>
+                                <option value="domain">领域</option>
+                                <option value="topic">主题</option>
+                                <option value="knowledge_point">知识点</option>
+                                <option value="product">产品</option>
+                                <option value="feature">功能</option>
+                                <option value="platform">平台</option>
+                                <option value="technology">技术</option>
+                                <option value="concept">概念</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-primary btn-sm" onclick="refreshGraph()">刷新图谱</button>
+                            <button class="btn btn-outline-success btn-sm" onclick="extractFromDocuments()">从文档提取</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="clearGraph()">清空图谱</button>
+                        </div>
+                    </div>
+                    <div id="graph-container" class="graph-container">
+                        <canvas id="graph-canvas"></canvas>
+                        <div id="graph-loading" class="graph-loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6>实体详情</h6>
+                        <div id="entity-detail" class="p-2 bg-light rounded">
+                            <small class="text-muted">点击图谱中的节点查看详情</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量上传模态框 -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">📁 批量文件上传</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>支持格式:</strong> PDF、Word (.doc/.docx)、Excel (.xls/.xlsx)、TXT、CSV、MD、JSON
+                    </div>
+                    <div class="alert alert-light border small">
+                        上传后系统会自动使用默认企业，并根据文档内容自动判断分类、分块策略和分块大小，再同步到数据库。
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="batch-file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.md,.json" aria-label="批量选择文件">
+                    </div>
+                    <div id="batch-upload-list" class="list-group"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="startBatchUpload()">开始上传</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="licenseLoginModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">授权登录</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="license-login-error" class="alert alert-danger py-2 d-none" role="alert"></div>
+                    <div class="mb-3">
+                        <label class="form-label" for="license-login-username">账户</label>
+                        <input type="text" class="form-control" id="license-login-username" placeholder="请输入账户" autocomplete="username">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="license-login-password">密码</label>
+                        <input type="password" class="form-control" id="license-login-password" placeholder="请输入密码" autocomplete="current-password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="license-login-submit-btn" onclick="submitLicenseLogin()">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="licenseModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">授权管理</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-light border small mb-3">
+                        <div>当前状态：<span id="license-modal-status">检测中...</span></div>
+                        <div class="mt-1 text-muted">支持 7天试用、1个月、3个月、6个月、1年授权码。请先复制当前设备请求码，再联系供应商生成绑定本机的授权码。</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">当前设备请求码</label>
+                        <textarea class="form-control font-monospace" id="license-request-code" rows="4" readonly placeholder="登录后自动生成当前设备请求码"></textarea>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <div class="small text-muted" id="license-request-code-meta">用于离线生成绑定本机的授权码</div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyLicenseRequestCode()">复制请求码</button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">客户名称</label>
+                        <input type="text" class="form-control" id="license-customer-name" placeholder="可选，便于登记授权">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">注册手机号</label>
+                        <input type="text" class="form-control" id="license-phone-number" placeholder="请输入生成该激活码时绑定的手机号">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">激活码</label>
+                        <textarea class="form-control" id="license-key-input" rows="5" placeholder="请粘贴与当前设备请求码绑定的授权码"></textarea>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">参数设置</h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadLicenseManagementSettings()">刷新参数</button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-title mb-0">爬取数量限制</h6>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="license-crawl-limit-enabled">
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted mb-3" id="license-crawl-limit-status">加载中...</div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="license-crawl-limit-daily">每日上限</label>
+                                        <input type="number" min="1" class="form-control" id="license-crawl-limit-daily" placeholder="例如 8000">
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="saveLicenseCrawlLimitConfig()">保存爬取限制</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-title mb-0">自动私信设置</h6>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="license-send-limit-enabled">
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted mb-3" id="license-send-limit-status">加载中...</div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-initial-hourly">初始每小时</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-initial-hourly">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-initial-daily">初始每天</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-initial-daily">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-hourly-increment">每轮小时增量</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-hourly-increment">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-daily-increment">每轮天增量</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-daily-increment">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-max-hourly">最大小时上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-max-hourly">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-max-daily">最大天上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-max-daily">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-cycle-days">增长周期天数</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-cycle-days">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="license-send-retention-days">事件保留天数</label>
+                                            <input type="number" min="1" class="form-control" id="license-send-retention-days">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary mt-3" onclick="saveLicenseSendLimitConfig()">保存私信设置</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-title mb-0">一键互动设置</h6>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="license-interact-limit-enabled">
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted mb-3" id="license-interact-limit-status">加载中...</div>
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-interact-min-interval">最小发送间隔(秒)</label>
+                                            <input type="number" min="1" class="form-control" id="license-interact-min-interval">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-interact-10m-limit">10分钟上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-interact-10m-limit">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-interact-24h-limit">24小时上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-interact-24h-limit">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-interact-retention-days">事件保留天数</label>
+                                            <input type="number" min="1" class="form-control" id="license-interact-retention-days">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary mt-3" onclick="saveLicenseInteractLimitConfig()">保存互动设置</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-title mb-0">原评论回复设置</h6>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="license-search-reply-limit-enabled">
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted mb-3" id="license-search-reply-limit-status">加载中...</div>
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-search-reply-10m-limit">10分钟上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-search-reply-10m-limit">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-search-reply-1h-limit">1小时上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-search-reply-1h-limit">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-search-reply-24h-limit">24小时上限</label>
+                                            <input type="number" min="1" class="form-control" id="license-search-reply-24h-limit">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="license-search-reply-retention-days">事件保留天数</label>
+                                            <input type="number" min="1" class="form-control" id="license-search-reply-retention-days">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary mt-3" onclick="saveLicenseSearchReplyLimitConfig()">保存原评论回复设置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" onclick="exportLicenseManagementData()">一键导出</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="deactivateLicense()">清除授权</button>
+                    <button type="button" class="btn btn-primary" onclick="activateLicense()">立即激活</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 一键互动模态框 -->
+    <div class="modal fade" id="interactModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">一键互动</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">已选中客户</label>
+                        <div class="form-control bg-light" id="interact-selected-count">0 位客户</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold mb-0">评论内容模板 (每次随机选择一条)</label>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addInteractCommentInput()">+ 添加评论</button>
+                        </div>
+                        <div id="interact-comment-inputs-container" class="d-flex flex-column gap-2">
+                            <!-- 动态生成的评论输入框将由 JS 初始化 -->
+                        </div>
+                        <div class="form-text">支持配置多条评论内容，一键互动时会对每位客户随机发送其中一条。</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="interact-submit-btn" onclick="submitInteractTask()">开始执行</button>
+                    <button type="button" class="btn btn-danger d-none" id="interact-stop-btn" onclick="stopTask()">停止运行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dingtalkConfigModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">钉钉提醒设置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <form id="dingtalk-config-form" onsubmit="event.preventDefault(); saveDingTalkConfig();">
+                    <div class="modal-body">
+                        <div class="alert alert-light border small mb-3">
+                            <div>当前状态：<span id="dingtalk-modal-status">检测中...</span></div>
+                            <div class="mt-1 text-muted">配置后，系统会将留资待跟进提醒发送到当前固定接收人的钉钉手机 App。</div>
+                        </div>
+
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="dingtalk-enabled">
+                            <label class="form-check-label" for="dingtalk-enabled">启用钉钉提醒</label>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-app-key">AppKey</label>
+                                <input type="text" class="form-control" id="dingtalk-app-key" placeholder="请输入钉钉 AppKey" autocomplete="username">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-app-secret">AppSecret</label>
+                                <input type="password" class="form-control" id="dingtalk-app-secret" placeholder="留空则保留已保存的 AppSecret" autocomplete="new-password">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-agent-id">AgentId</label>
+                                <input type="text" class="form-control" id="dingtalk-agent-id" placeholder="请输入 AgentId" autocomplete="off">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-receiver-name">接收人姓名</label>
+                                <input type="text" class="form-control" id="dingtalk-receiver-name" placeholder="例如：销售负责人" autocomplete="name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-receiver-mobile">接收人手机号</label>
+                                <input type="text" class="form-control" id="dingtalk-receiver-mobile" placeholder="请输入钉钉企业通讯录手机号" autocomplete="tel">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="dingtalk-receiver-userid">绑定后的 UserId</label>
+                                <input type="text" class="form-control" id="dingtalk-receiver-userid" placeholder="绑定后自动回填" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary" onclick="bindDingTalkReceiver()">绑定接收人</button>
+                        <button type="button" class="btn btn-outline-success" onclick="sendDingTalkTestMessage()">测试发送</button>
+                        <button type="submit" class="btn btn-primary">保存配置</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if license_payload_json %}
+    <script>window.__HUOKE_LICENSE__ = {{ license_payload_json | safe }};</script>
+    {% endif %}
+    <script src="/static/bootstrap.bundle.min.js"></script>
+    <!-- 命名空间模块（必须先于 main.js 加载）：工具函数 / 网络层 / UI 辅助 -->
+    <script src="/static/js/modules/hk-utils.js?v=20260611a"></script>
+    <script src="/static/js/modules/hk-api.js?v=20260611a"></script>
+    <script src="/static/js/modules/hk-ui.js?v=20260611a"></script>
+    <script src="/static/js/main.js?v=20260603a"></script>
+    <script src="/static/js/learning.js?v=20260509b"></script>
+    <script src="/static/js/knowledge.js?v=20260607a"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+groups:
+  - name: rag_alerts
+    rules:
+      - alert: HighRetrievalLatency
+        expr: histogram_quantile(0.95, rate(rag_retrieval_latency_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          module: rag
+        annotations:
+          summary: "RAG检索延迟过高"
+          description: "P95检索延迟超过500ms，当前值为{{ $value | printf \"%.3f\" }}s"
+          runbook_url: "https://wiki.example.com/runbooks/high-retrieval-latency"
+
+      - alert: VeryHighRetrievalLatency
+        expr: histogram_quantile(0.95, rate(rag_retrieval_latency_seconds_bucket[5m])) > 1.0
+        for: 2m
+        labels:
+          severity: critical
+          module: rag
+        annotations:
+          summary: "RAG检索延迟严重过高"
+          description: "P95检索延迟超过1秒，当前值为{{ $value | printf \"%.3f\" }}s，请立即检查系统状态"
+
+      - alert: LowKnowledgeHitRate
+        expr: |
+          (
+            rate(rag_knowledge_hit_total[10m]) +
+            rate(rag_knowledge_miss_total[10m])
+          ) > 0
+          and
+          rate(rag_knowledge_hit_total[10m]) / (
+            rate(rag_knowledge_hit_total[10m]) +
+            rate(rag_knowledge_miss_total[10m])
+          ) < 0.6
+        for: 10m
+        labels:
+          severity: critical
+          module: rag
+        annotations:
+          summary: "知识库命中率过低"
+          description: "知识库命中率低于60%，请检查知识库内容和检索逻辑"
+
+      - alert: HighAnswerConfidence
+        expr: histogram_quantile(0.5, rate(rag_answer_confidence_bucket[10m])) < 0.5
+        for: 15m
+        labels:
+          severity: warning
+          module: rag
+        annotations:
+          summary: "答案置信度过低"
+          description: "答案置信度中位数低于0.5，可能需要优化知识库"
+
+      - alert: RetrievalErrorRate
+        expr: |
+          rate(rag_retrieval_total{status="error"}[5m])
+          /
+          rate(rag_retrieval_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          module: rag
+        annotations:
+          summary: "检索错误率过高"
+          description: "检索错误率超过10%，请检查向量存储和检索服务状态"
+
+  - name: business_alerts
+    rules:
+      - alert: HighHumanEscalationRate
+        expr: |
+          (
+            rate(human_escalation_total[30m]) +
+            rate(messages_processed_total[30m])
+          ) > 0
+          and
+          rate(human_escalation_total[30m]) / (
+            rate(human_escalation_total[30m]) +
+            rate(messages_processed_total[30m])
+          ) > 0.3
+        for: 30m
+        labels:
+          severity: warning
+          module: business
+        annotations:
+          summary: "转人工率过高"
+          description: "转人工率超过30%，请检查机器人回复质量和知识库覆盖"
+
+      - alert: HighMessageFailureRate
+        expr: |
+          rate(messages_failed_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          module: business
+        annotations:
+          summary: "消息处理失败率过高"
+          description: "消息处理失败率过高，当前失败速度为{{ $value | printf \"%.1f\" }}条/分钟"
+
+      - alert: LowReplyRate
+        expr: |
+          (
+            rate(messages_processed_total[10m]) +
+            rate(human_escalation_total[10m])
+          ) > 0
+          and
+          rate(messages_processed_total[10m]) / (
+            rate(messages_processed_total[10m]) +
+            rate(human_escalation_total[10m])
+          ) < 0.8
+        for: 15m
+        labels:
+          severity: warning
+          module: business
+        annotations:
+          summary: "自动回复率过低"
+          description: "自动回复率低于80%，可能需要优化知识库或检查LLM服务状态"
+
+      - alert: HighAvgResponseTime
+        expr: histogram_quantile(0.5, rate(message_response_time_seconds_bucket[10m])) > 3
+        for: 10m
+        labels:
+          severity: warning
+          module: business
+        annotations:
+          summary: "平均响应时间过长"
+          description: "平均响应时间超过3秒，请检查系统负载和LLM服务状态"
+
+  - name: system_alerts
+    rules:
+      - alert: HighCpuUsage
+        expr: system_cpu_usage_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          module: system
+        annotations:
+          summary: "CPU使用率过高"
+          description: "CPU使用率超过80%，当前值为{{ $value | printf \"%.1f\" }}%，建议扩容或优化"
+
+      - alert: VeryHighCpuUsage
+        expr: system_cpu_usage_percent > 95
+        for: 5m
+        labels:
+          severity: critical
+          module: system
+        annotations:
+          summary: "CPU使用率严重过高"
+          description: "CPU使用率超过95%，系统可能过载，请立即处理"
+
+      - alert: HighMemoryUsage
+        expr: system_memory_usage_percent > 85
+        for: 10m
+        labels:
+          severity: warning
+          module: system
+        annotations:
+          summary: "内存使用率过高"
+          description: "内存使用率超过85%，当前值为{{ $value | printf \"%.1f\" }}%"
+
+      - alert: OllamaModelDown
+        expr: llm_model_loaded == 0
+        for: 1m
+        labels:
+          severity: critical
+          module: system
+        annotations:
+          summary: "Ollama模型未加载"
+          description: "Ollama服务可能已断开，请检查Ollama服务状态"
+
+      - alert: VectorCountLow
+        expr: rag_vector_count < 10
+        for: 5m
+        labels:
+          severity: warning
+          module: system
+        annotations:
+          summary: "向量库条目数过低"
+          description: "向量库条目数低于10，可能知识库未正确加载"
+
+      - alert: LLMHighLatency
+        expr: histogram_quantile(0.95, rate(llm_generation_latency_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          module: llm
+        annotations:
+          summary: "LLM生成延迟过高"
+          description: "LLM P95生成延迟超过10秒，当前值为{{ $value | printf \"%.1f\" }}秒"
+
+      - alert: LLMHighErrorRate
+        expr: rate(llm_errors_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          module: llm
+        annotations:
+          summary: "LLM错误率过高"
+          description: "LLM错误率过高，请检查Ollama服务状态和网络连接"
+
+  - name: availability_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(messages_failed_total[5m]) +
+            rate(llm_errors_total[5m])
+          )
+          /
+          (
+            rate(messages_total[5m]) + 0.001
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          module: availability
+        annotations:
+          summary: "系统错误率过高"
+          description: "5分钟内错误率超过5%，请立即检查系统状态"
+
+      - alert: ServiceDown
+        expr: rate(messages_total[5m]) == 0
+        for: 10m
+        labels:
+          severity: warning
+          module: availability
+        annotations:
+          summary: "无消息处理"
+          description: "10分钟内没有处理任何消息，服务可能处于空闲状态或连接中断"

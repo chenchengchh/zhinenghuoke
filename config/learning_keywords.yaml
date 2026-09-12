@@ -1,0 +1,109 @@
+# RAG 自学习关键词配置
+# 用于自学习系统检测未知问题、问题模式、注入攻击等
+# 通过此文件可以在不改代码的情况下调整检测灵敏度
+
+unknown_detection:
+  # 低置信度关键词：出现在 RAG 回答中表示"没答好"
+  low_confidence_keywords:
+    - 抱歉
+    - 无法
+    - 不知道
+    - 没有找到
+    - 无法处理
+    - 不清楚
+    - 没找到
+    - 没有相关信息
+
+  # 问题模式：判断消息是否在提问
+  question_patterns:
+    - 怎么
+    - 如何
+    - 什么
+    - 为什么
+    - 哪里
+    - 多少
+    - 是不是
+    - 能不能
+    - 可以吗
+    - 请问
+    - 帮我
+    - 想了解
+
+  # 置信度阈值（0-1）
+  confidence_threshold: 0.5
+
+# 知识库注入检测
+injection_detection:
+  # 联系方式类攻击
+  contact_keywords:
+    - 联系方式
+    - 电话
+    - 微信
+    - QQ
+    - 加我
+    - 私聊
+    - 邮箱
+
+  # 转账类攻击
+  payment_keywords:
+    - 转账
+    - 汇款
+    - 打款
+    - 收款
+
+  # 违规内容类
+  violation_keywords:
+    - 赌博
+    - 博彩
+    - 色情
+    - 暴力
+    - 毒品
+    - 违禁
+
+  # 价格注入（防止恶意修改价格）
+  price_injection_keywords:
+    - 100元
+    - 500元
+    - 1000元
+    - 10000元
+
+# 意图识别模式（用于判断用户意图）
+intent_patterns:
+  price_inquiry:
+    - 价格
+    - 多少钱
+    - 费用
+    - 报价
+    - 收费
+
+  booking_intent:
+    - 报名
+    - 预订
+    - 下单
+    - 报名
+    - 预约
+    - 锁定
+    - 锁名额
+
+  hesitation:
+    - 考虑一下
+    - 再看看
+    - 不太确定
+    - 还在比较
+    - 稍后
+
+  complaint:
+    - 投诉
+    - 不满意
+    - 退款
+    - 退订
+    - 取消
+
+# 知识学习质量门槛
+learning_thresholds:
+  # 最小学习置信度
+  min_learning_confidence: 0.6
+  # 同一问题最大重复学习次数
+  max_duplicate_learns: 3
+  # 学习频率限制（秒），同一问题多久内不再学习
+  learning_cooldown: 3600

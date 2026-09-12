@@ -1,0 +1,39 @@
+cache:
+  enabled: true
+  max_size: 1000
+  ttl: 300
+observability:
+  logging_level: INFO
+  metrics_enabled: true
+rag:
+  cache_ttl: 300
+  max_context_length: 10
+  min_confidence: 0.6
+  top_k: 5
+rpa:
+  max_concurrent_operations: 1
+  max_retries: 3
+  poll_interval: 2.0
+  poll_interval_idle: 5.0
+  rate_limit:
+    click_per_window: 30
+    send_per_window: 20
+    window_size: 60
+services:
+  ollama:
+    host: "http://localhost:11434"
+    model: "qwen3.5:4b"
+    timeout: 30
+  dashscope:
+    base_url: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
+    embedding_url: "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding"
+  openai:
+    base_url: "https://api.openai.com/v1"
+browser:
+  cdp_port: 9222
+  douyin_base_url: "https://www.douyin.com"
+  douyin_chat_url: "https://www.douyin.com/chat"
+  douyin_search_url: "https://www.douyin.com/search"
+server:
+  host: "127.0.0.1"
+  port: 8023
